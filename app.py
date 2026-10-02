@@ -28,7 +28,7 @@ app = Flask(
     static_folder="static"
 )
 
-app.secret_key = "truck_parts_chave"
+app.secret_key = os.getenv("SECRET_KEY", "truck_parts_chave")
 
 
 # =========================================================
@@ -56,16 +56,16 @@ def fechar_banco(conexao, cursor):
 
 
 # =========================================================
-# CONFIGURAÇÃO
+# UUSARIO LOGADO(OK)
 # =========================================================
 
-app = Flask(
-    __name__,
-    template_folder="templates",
-    static_folder="static"
-)
-
-app.secret_key = "truck_parts_chave"
+@app.context_processor
+def injetar_usuario():
+ 
+    return {
+        "logado": "usuario_id" in session,
+        "usuario_nome": session.get("usuario_nome")
+    }
 
 
 # =========================================================
@@ -432,108 +432,72 @@ def fazer_cadastro():
 # LOGIN - PÁGINA
 # =========================================================
 
-@app.route(
-    "/login",
-    methods=["GET"]
-)
+@app.route("/login", methods=["GET"])
 def login():
-
-    return render_template(
-        "login.html"
-    )
+ 
+    # Se já estiver logado, não precisa ver a tela de login
+    if "usuario_id" in session:
+        return redirect(url_for("land"))
+ 
+    return render_template("login.html")
+ 
 
 
 # =========================================================
 # LOGIN - PROCESSAMENTO
 # =========================================================
 
-@app.route(
-    "/login",
-    methods=["POST"]
-)
+@app.route("/login", methods=["POST"])
 def fazer_login():
-
-    email = request.form.get(
-        "email",
-        ""
-    ).strip().lower()
-
-    senha = request.form.get(
-        "senha",
-        ""
-    )
-
-
+ 
+    email = request.form.get("email", "").strip().lower()
+    senha = request.form.get("senha", "")
+ 
     conexao = None
     cursor = None
-
-
+ 
     try:
-
+ 
         conexao = conectar_banco()
-
-        cursor = conexao.cursor(
-            dictionary=True
-        )
-
-
+        cursor = conexao.cursor(dictionary=True)
+ 
         cursor.execute(
             """
             SELECT
                 id_usuario,
                 nome,
                 senha
-
+ 
             FROM USUARIO
-
+ 
             WHERE email = %s
             """,
             (email,)
         )
-
-
+ 
         usuario = cursor.fetchone()
-
-
+ 
     except Error as erro:
-
+ 
         return f"Erro ao acessar o banco: {erro}"
-
-
+ 
     finally:
-
-        fechar_banco(
-            conexao,
-            cursor
-        )
-
-
+ 
+        fechar_banco(conexao, cursor)
+ 
     if usuario is None:
-
         return "E-mail ou senha incorretos."
-
-
-    if not check_password_hash(
-        usuario["senha"],
-        senha
-    ):
-
+ 
+    if not check_password_hash(usuario["senha"], senha):
         return "E-mail ou senha incorretos."
-
-
-    session["usuario_id"] = (
-        usuario["id_usuario"]
-    )
-
-    session["usuario_nome"] = (
-        usuario["nome"]
-    )
-
-
-    return redirect(
-        url_for("land")
-    )
-
+ 
+   
+    session.clear()
+    session["usuario_id"] = usuario["id_usuario"]
+    session["usuario_nome"] = usuario["nome"]
+ 
+    return redirect(url_for("land"))
+ 
 
 # =========================================================
 # LOGOUT
