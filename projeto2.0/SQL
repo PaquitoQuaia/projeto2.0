@@ -1,0 +1,722 @@
+
+CREATE DATABASE DB_truck_prts;
+
+USE DB_truck_prts;
+
+
+-- =========================================
+-- ENDEREÇO
+-- =========================================
+
+CREATE TABLE ENDERECO (
+    id_endereco INT AUTO_INCREMENT,
+    cep VARCHAR(8) NOT NULL,
+    numero VARCHAR(10) NOT NULL,
+    complemento VARCHAR(100),
+
+    PRIMARY KEY (id_endereco)
+);
+
+
+-- =========================================
+-- USUÁRIO
+-- =========================================
+
+CREATE TABLE USUARIO (
+    id_usuario INT AUTO_INCREMENT,
+    id_endereco INT,
+
+    nome VARCHAR(100) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    cpf CHAR(11) NOT NULL UNIQUE,
+    telefone VARCHAR(11) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+
+    tipo_cadastro VARCHAR(20) NOT NULL,
+    interesses VARCHAR(255),
+
+    PRIMARY KEY (id_usuario),
+
+    FOREIGN KEY (id_endereco)
+        REFERENCES ENDERECO(id_endereco)
+);
+
+
+-- =========================================
+-- PRODUTO
+-- =========================================
+
+CREATE TABLE PRODUTO (
+    id_produto INT AUTO_INCREMENT,
+
+    descricao_prod VARCHAR(500) NOT NULL,
+    preco_prod DECIMAL(10,2) NOT NULL,
+    marca_produto VARCHAR(50),
+    categoria VARCHAR(50) NOT NULL,
+    imagem VARCHAR(255),
+    estoque INT NOT NULL DEFAULT 0,
+
+    -- MODELO DO CAMINHÃO SCANIA
+    modelo_scania VARCHAR(50),
+
+    PRIMARY KEY (id_produto)
+);
+
+
+-- =========================================
+-- CATÁLOGO
+-- =========================================
+
+CREATE TABLE CATALOGO (
+    id_catalogo INT AUTO_INCREMENT,
+    id_produto INT NOT NULL,
+    secoes VARCHAR(50),
+
+    PRIMARY KEY (id_catalogo),
+
+    FOREIGN KEY (id_produto)
+        REFERENCES PRODUTO(id_produto)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================
+-- CARRINHO
+-- =========================================
+
+CREATE TABLE CARRINHO (
+    id_carrinho INT AUTO_INCREMENT,
+
+    id_produto INT NOT NULL,
+    id_usuario INT NOT NULL,
+
+    quantidade INT NOT NULL DEFAULT 1,
+    subtotal DECIMAL(10,2) NOT NULL,
+
+    cupom VARCHAR(20),
+
+    PRIMARY KEY (id_carrinho),
+
+    FOREIGN KEY (id_produto)
+        REFERENCES PRODUTO(id_produto)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES USUARIO(id_usuario)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================
+-- SUPORTE
+-- =========================================
+
+CREATE TABLE SUPORTE (
+    id_suporte INT AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    numero_wts VARCHAR(11),
+
+    PRIMARY KEY (id_suporte),
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES USUARIO(id_usuario)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================
+-- FORMA DE PAGAMENTO
+-- =========================================
+
+CREATE TABLE FORMA_PAG (
+    id_pag INT AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    tipo_pagamento VARCHAR(20) NOT NULL,
+
+    PRIMARY KEY (id_pag),
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES USUARIO(id_usuario)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================
+-- FINALIZAÇÃO
+-- =========================================
+
+CREATE TABLE FINAL_PAG (
+    id_final_pag INT AUTO_INCREMENT,
+
+    id_pag INT,
+    id_carrinho INT,
+    id_endereco INT,
+    id_usuario INT NOT NULL,
+
+    frete DECIMAL(10,2) DEFAULT 0.00,
+    forma_de_envio VARCHAR(20),
+
+    PRIMARY KEY (id_final_pag),
+
+    FOREIGN KEY (id_pag)
+        REFERENCES FORMA_PAG(id_pag),
+
+    FOREIGN KEY (id_carrinho)
+        REFERENCES CARRINHO(id_carrinho),
+
+    FOREIGN KEY (id_endereco)
+        REFERENCES ENDERECO(id_endereco),
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES USUARIO(id_usuario)
+        ON DELETE CASCADE
+);
+
+
+CREATE TABLE ITEM_CARRINHO (
+    id_item_carrinho INT AUTO_INCREMENT,
+    id_carrinho INT,
+    id_produto INT,
+    quantidade INT NOT NULL DEFAULT 1,
+    preco_unitario DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT pk_item_carrinho
+        PRIMARY KEY (id_item_carrinho),
+
+    CONSTRAINT fk_item_carrinho_carrinho
+        FOREIGN KEY (id_carrinho)
+        REFERENCES CARRINHO(id_carrinho)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_item_carrinho_produto
+        FOREIGN KEY (id_produto)
+        REFERENCES PRODUTO(id_produto)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+
+-- =========================================
+-- 500 PRODUTOS
+-- SOMENTE SCANIA
+-- =========================================
+
+INSERT INTO PRODUTO (
+    descricao_prod,
+    preco_prod,
+    marca_produto,
+    categoria,
+    imagem,
+    estoque,
+    modelo_scania
+)
+
+WITH RECURSIVE numeros AS (
+
+    SELECT 1 AS numero
+
+    UNION ALL
+
+    SELECT numero + 1
+    FROM numeros
+    WHERE numero < 500
+),
+
+produtos_base AS (
+
+    -- 01
+    SELECT
+        1 AS base_id,
+        'Bomba D''Água' AS nome,
+        389.90 AS preco,
+        'Bomba d''água' AS categoria,
+        'imagens/bomba_dagua.png' AS imagem
+
+    UNION ALL
+
+    -- 02
+    SELECT
+        2,
+        'Bomba de Óleo',
+        459.90,
+        'Motor',
+        'imagens/bomba_oleo.png'
+
+    UNION ALL
+
+    -- 03
+    SELECT
+        3,
+        'Junta do Cabeçote',
+        289.90,
+        'Motor',
+        'imagens/junta_cabecote.png'
+
+    UNION ALL
+
+    -- 04
+    SELECT
+        4,
+        'Bomba de Combustível',
+        529.90,
+        'Combustível',
+        'imagens/bomba_combustivel.png'
+
+    UNION ALL
+
+    -- 05
+    SELECT
+        5,
+        'Radiador',
+        1299.90,
+        'Arrefecimento',
+        'imagens/radiador.png'
+
+    UNION ALL
+
+    -- 06
+    SELECT
+        6,
+        'Intercooler',
+        1099.90,
+        'Arrefecimento',
+        'imagens/intercooler.png'
+
+    UNION ALL
+
+    -- 07
+    SELECT
+        7,
+        'Ventoinha do Radiador',
+        449.90,
+        'Arrefecimento',
+        'imagens/ventoinha.png'
+
+    UNION ALL
+
+    -- 08
+    SELECT
+        8,
+        'Reservatório de Expansão',
+        259.90,
+        'Arrefecimento',
+        'imagens/reservatorio.png'
+
+    UNION ALL
+
+    -- 09
+    SELECT
+        9,
+        'Válvula Termostática',
+        189.90,
+        'Arrefecimento',
+        'imagens/valvula_termostatica.png'
+
+    UNION ALL
+
+    -- 10
+    SELECT
+        10,
+        'Filtro de Óleo',
+        89.90,
+        'Filtros',
+        'imagens/filtro_oleo.png'
+
+    UNION ALL
+
+    -- 11
+    SELECT
+        11,
+        'Filtro de Ar',
+        139.90,
+        'Filtros',
+        'imagens/filtro_ar.png'
+
+    UNION ALL
+
+    -- 12
+    SELECT
+        12,
+        'Kit de Embreagem',
+        1499.90,
+        'Embreagem',
+        'imagens/kit_embreagem.png'
+
+    UNION ALL
+
+    -- 13
+    SELECT
+        13,
+        'Pastilha de Freio',
+        249.90,
+        'Freios',
+        'imagens/pastilha_freio.png'
+
+    UNION ALL
+
+    -- 14
+    SELECT
+        14,
+        'Amortecedor Dianteiro',
+        649.90,
+        'Suspensão',
+        'imagens/amortecedor_dianteiro.png'
+
+    UNION ALL
+
+    -- 15
+    SELECT
+        15,
+        'Cruzeta do Cardan',
+        289.90,
+        'Transmissão',
+        'imagens/cruzeta_cardan.png'
+
+    UNION ALL
+
+    -- 16
+    SELECT
+        16,
+        'Alternador',
+        1099.90,
+        'Elétrica',
+        'imagens/alternador.png'
+
+    UNION ALL
+
+    -- 17
+    SELECT
+        17,
+        'Farol Principal',
+        499.90,
+        'Iluminação',
+        'imagens/farol.png'
+
+    UNION ALL
+
+    -- 18
+    SELECT
+        18,
+        'Retrovisor Externo',
+        349.90,
+        'Cabine',
+        'imagens/retrovisor.png'
+
+    UNION ALL
+
+    -- 19
+    SELECT
+        19,
+        'Maçaneta da Porta',
+        129.90,
+        'Cabine',
+        'imagens/macaneta.png'
+
+    UNION ALL
+
+    -- 20
+    SELECT
+        20,
+        'Para-choque Dianteiro',
+        1299.90,
+        'Cabine',
+        'imagens/parachoque.png'
+
+    UNION ALL
+
+    -- 21
+    SELECT
+        21,
+        'Bomba Hidráulica',
+        739.90,
+        'Hidráulica',
+        'imagens/bomba_hidraulica.png'
+
+    UNION ALL
+
+    -- 22
+    SELECT
+        22,
+        'Compressor de Ar',
+        899.90,
+        'Motor',
+        'imagens/compressor_ar.png'
+
+    UNION ALL
+
+    -- 23
+    SELECT
+        23,
+        'Disco de Freio',
+        589.90,
+        'Freios',
+        'imagens/disco_freio.png'
+
+    UNION ALL
+
+    -- 24
+    SELECT
+        24,
+        'Mola Traseira',
+        479.90,
+        'Suspensão',
+        'imagens/mola_traseira.png'
+),
+
+-- =========================================
+-- MODELOS SCANIA
+-- =========================================
+
+modelos AS (
+
+    SELECT 1 AS id, 'R 450' AS modelo
+
+    UNION ALL SELECT 2, 'R 500'
+
+    UNION ALL SELECT 3, 'R 540'
+
+    UNION ALL SELECT 4, 'R 620'
+
+    UNION ALL SELECT 5, 'R 660'
+
+    UNION ALL SELECT 6, 'R 730'
+
+    UNION ALL SELECT 7, 'G 360'
+
+    UNION ALL SELECT 8, 'G 410'
+
+    UNION ALL SELECT 9, 'G 450'
+
+    UNION ALL SELECT 10, 'G 500'
+
+    UNION ALL SELECT 11, 'P 250'
+
+    UNION ALL SELECT 12, 'P 280'
+
+    UNION ALL SELECT 13, 'P 310'
+
+    UNION ALL SELECT 14, 'P 320'
+
+    UNION ALL SELECT 15, 'P 360'
+
+    UNION ALL SELECT 16, 'P 410'
+
+    UNION ALL SELECT 17, 'S 450'
+
+    UNION ALL SELECT 18, 'S 500'
+
+    UNION ALL SELECT 19, 'S 540'
+
+    UNION ALL SELECT 20, 'S 730'
+)
+
+SELECT
+
+    -- =====================================
+    -- NOME + CÓDIGO
+    -- =====================================
+
+    CONCAT(
+        pb.nome,
+        ' ',
+        LPAD(
+            1000000000
+            + (
+                ((n.numero - 1) * 24)
+                + pb.base_id
+            ),
+            10,
+            '0'
+        )
+    ) AS descricao_prod,
+
+    -- =====================================
+    -- PREÇO
+    -- =====================================
+
+    ROUND(
+        pb.preco
+        +
+        (
+            (
+                (n.numero * pb.base_id) % 17
+            ) * 13.50
+        ),
+        2
+    ) AS preco_prod,
+
+    -- =====================================
+    -- MARCA
+    -- =====================================
+
+    'Scania' AS marca_produto,
+
+    -- =====================================
+    -- CATEGORIA
+    -- =====================================
+
+    pb.categoria,
+
+    -- =====================================
+    -- IMAGEM
+    -- =====================================
+
+    pb.imagem,
+
+    -- =====================================
+    -- ESTOQUE
+    -- =====================================
+
+    5 + (
+        (n.numero * pb.base_id) % 26
+    ) AS estoque,
+
+    -- =====================================
+    -- MODELO SCANIA
+    -- =====================================
+
+    m.modelo AS modelo_scania
+
+FROM numeros n
+
+CROSS JOIN produtos_base pb
+
+JOIN modelos m
+    ON m.id =
+       (
+           (
+               n.numero
+               + pb.base_id
+               - 2
+           ) % 20
+       ) + 1
+
+WHERE
+    (
+        (n.numero - 1) * 24
+        + pb.base_id
+    ) <= 500
+
+ORDER BY
+    n.numero,
+    pb.base_id;
+
+
+-- =========================================
+-- PREENCHER CATÁLOGO
+-- =========================================
+
+INSERT INTO CATALOGO (
+    id_produto,
+    secoes
+)
+
+SELECT
+    id_produto,
+    categoria
+
+FROM PRODUTO;
+
+
+-- =========================================
+-- TESTE 1
+-- QUANTIDADE DE PRODUTOS
+-- =========================================
+
+SELECT
+    COUNT(*) AS total_produtos
+FROM PRODUTO;
+
+
+-- =========================================
+-- TESTE 2
+-- PRIMEIROS PRODUTOS
+-- =========================================
+
+SELECT
+    id_produto,
+    descricao_prod,
+    preco_prod,
+    marca_produto,
+    categoria,
+    imagem,
+    estoque,
+    modelo_scania
+FROM PRODUTO
+LIMIT 20;
+
+
+-- =========================================
+-- TESTE 3
+-- QUANTIDADE POR MODELO
+-- =========================================
+
+SELECT
+    modelo_scania,
+    COUNT(*) AS quantidade
+FROM PRODUTO
+GROUP BY modelo_scania
+ORDER BY modelo_scania;
+
+
+-- =========================================
+-- TESTE 4
+-- QUANTIDADE POR CATEGORIA
+-- =========================================
+
+SELECT
+    categoria,
+    COUNT(*) AS quantidade
+FROM PRODUTO
+GROUP BY categoria
+ORDER BY categoria;
+
+
+-- =========================================
+-- TESTE 5
+-- PRODUTOS DO MODELO R 450
+-- =========================================
+
+SELECT
+    id_produto,
+    descricao_prod,
+    categoria,
+    modelo_scania,
+    preco_prod
+FROM PRODUTO
+WHERE modelo_scania = 'R 450';
+
+
+-- =========================================
+-- TESTE 6
+-- PESQUISA POR CÓDIGO
+-- =========================================
+
+SELECT
+    id_produto,
+    descricao_prod,
+    modelo_scania
+FROM PRODUTO
+WHERE descricao_prod LIKE '%1000000001%';
+
+
+-- =========================================
+-- USUÁRIOS
+-- =========================================
+
+SELECT *
+FROM USUARIO;
+
+
+-- =========================================
+-- CARRINHO
+-- =========================================
+
+SELECT *
+FROM CARRINHO;
+
+select * from carrinho;
+
+describe ITEM_CARRINHO
