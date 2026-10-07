@@ -1,11 +1,5 @@
-from flask import (
-    Flask,
-    render_template,
-    request,
-    session,
-    redirect,
-    url_for
-)
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
 import mysql.connector
 import os
@@ -28,7 +22,10 @@ app = Flask(
     static_folder="static"
 )
 
-app.secret_key = os.getenv("SECRET_KEY", "truck_parts_chave")
+app.secret_key = os.getenv(
+    "SECRET_KEY",
+    "truck_parts_chave"
+)
 
 
 # =========================================================
@@ -38,10 +35,25 @@ app.secret_key = os.getenv("SECRET_KEY", "truck_parts_chave")
 def conectar_banco():
 
     return mysql.connector.connect(
-       host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-       user=os.getenv("MYSQL_USER", "root"),
-       password=os.getenv("MYSQL_PASSWORD", "senai105"),
-       database=os.getenv("MYSQL_DATABASE", "DB_truck_prts")
+        host=os.getenv(
+            "MYSQL_HOST",
+            "127.0.0.1"
+        ),
+
+        user=os.getenv(
+            "MYSQL_USER",
+            "root"
+        ),
+
+        password=os.getenv(
+            "MYSQL_PASSWORD",
+            "senai105"
+        ),
+
+        database=os.getenv(
+            "MYSQL_DATABASE",
+            "DB_truck_prts"
+        )
     )
 
 
@@ -54,41 +66,54 @@ def fechar_banco(conexao, cursor):
         conexao.close()
 
 
+def usuario_existe(id_usuario):
+
+    conexao = None
+    cursor = None
+
+    try:
+
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+
+        cursor.execute(
+            """
+            SELECT 1
+
+            FROM USUARIO
+
+            WHERE id_usuario = %s
+            """,
+            (id_usuario,)
+        )
+
+        return cursor.fetchone() is not None
+
+    except Error:
+
+        return False
+
+    finally:
+
+        fechar_banco(
+            conexao,
+            cursor
+        )
+
 
 # =========================================================
-# UUSARIO LOGADO(OK)
+# USUÁRIO LOGADO
 # =========================================================
 
 @app.context_processor
 def injetar_usuario():
- 
+
     return {
         "logado": "usuario_id" in session,
-        "usuario_nome": session.get("usuario_nome")
+        "usuario_nome": session.get(
+            "usuario_nome"
+        )
     }
-
-
-# =========================================================
-# CONEXÃO COM MYSQL
-# =========================================================
-
-def conectar_banco():
-
-    return mysql.connector.connect(
-       host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-       user=os.getenv("MYSQL_USER", "root"),
-       password=os.getenv("MYSQL_PASSWORD", "senai105"),
-       database=os.getenv("MYSQL_DATABASE", "DB_truck_prts")
-    )
-
-
-def fechar_banco(conexao, cursor):
-
-    if cursor:
-        cursor.close()
-
-    if conexao:
-        conexao.close()
 
 
 # =========================================================
@@ -119,7 +144,10 @@ def cadastro():
 # CADASTRO - PROCESSAMENTO
 # =========================================================
 
-@app.route("/cadastrar", methods=["POST"])
+@app.route(
+    "/cadastrar",
+    methods=["POST"]
+)
 def fazer_cadastro():
 
     nome = request.form.get(
@@ -221,7 +249,9 @@ def fazer_cadastro():
         return "As senhas não coincidem."
 
     if len(senha) < 6:
-        return "A senha deve possuir pelo menos 6 caracteres."
+        return (
+            "A senha deve possuir pelo menos 6 caracteres."
+        )
 
 
     # =====================================================
@@ -278,15 +308,20 @@ def fazer_cadastro():
         cursor.execute(
             """
             SELECT id_usuario
+
             FROM USUARIO
+
             WHERE email = %s
             """,
+
             (email,)
         )
 
         if cursor.fetchone():
 
-            return "Este e-mail já está cadastrado."
+            return (
+                "Este e-mail já está cadastrado."
+            )
 
 
         # =================================================
@@ -296,15 +331,20 @@ def fazer_cadastro():
         cursor.execute(
             """
             SELECT id_usuario
+
             FROM USUARIO
+
             WHERE cpf = %s
             """,
+
             (cpf,)
         )
 
         if cursor.fetchone():
 
-            return "Este CPF já está cadastrado."
+            return (
+                "Este CPF já está cadastrado."
+            )
 
 
         # =================================================
@@ -314,15 +354,20 @@ def fazer_cadastro():
         cursor.execute(
             """
             SELECT id_usuario
+
             FROM USUARIO
+
             WHERE telefone = %s
             """,
+
             (telefone,)
         )
 
         if cursor.fetchone():
 
-            return "Este telefone já está cadastrado."
+            return (
+                "Este telefone já está cadastrado."
+            )
 
 
         # =================================================
@@ -345,10 +390,13 @@ def fazer_cadastro():
                 %s
             )
             """,
+
             (
                 cep,
                 numero,
-                complemento if complemento else None
+                complemento
+                if complemento
+                else None
             )
         )
 
@@ -388,6 +436,7 @@ def fazer_cadastro():
                 %s
             )
             """,
+
             (
                 id_endereco,
                 nome,
@@ -404,8 +453,6 @@ def fazer_cadastro():
 
         conexao.commit()
 
-        
-
 
         return redirect(
             url_for("login")
@@ -417,7 +464,9 @@ def fazer_cadastro():
         if conexao:
             conexao.rollback()
 
-        return f"Erro ao realizar cadastro: {erro}"
+        return (
+            f"Erro ao realizar cadastro: {erro}"
+        )
 
 
     finally:
@@ -432,72 +481,123 @@ def fazer_cadastro():
 # LOGIN - PÁGINA
 # =========================================================
 
-@app.route("/login", methods=["GET"])
+@app.route(
+    "/login",
+    methods=["GET"]
+)
 def login():
- 
-    # Se já estiver logado, não precisa ver a tela de login
+
     if "usuario_id" in session:
-        return redirect(url_for("land"))
- 
-    return render_template("login.html")
- 
+
+        return redirect(
+            url_for("land")
+        )
+
+    return render_template(
+        "login.html"
+    )
 
 
 # =========================================================
 # LOGIN - PROCESSAMENTO
 # =========================================================
 
-@app.route("/login", methods=["POST"])
+@app.route(
+    "/login",
+    methods=["POST"]
+)
 def fazer_login():
- 
-    email = request.form.get("email", "").strip().lower()
-    senha = request.form.get("senha", "")
- 
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    senha = request.form.get(
+        "senha",
+        ""
+    )
+
+
     conexao = None
     cursor = None
- 
+
+
     try:
- 
+
         conexao = conectar_banco()
-        cursor = conexao.cursor(dictionary=True)
- 
+
+        cursor = conexao.cursor(
+            dictionary=True
+        )
+
+
         cursor.execute(
             """
             SELECT
                 id_usuario,
                 nome,
                 senha
- 
+
             FROM USUARIO
- 
+
             WHERE email = %s
             """,
+
             (email,)
         )
- 
+
+
         usuario = cursor.fetchone()
- 
+
+
     except Error as erro:
- 
-        return f"Erro ao acessar o banco: {erro}"
- 
+
+        return (
+            f"Erro ao acessar o banco: {erro}"
+        )
+
+
     finally:
- 
-        fechar_banco(conexao, cursor)
- 
+
+        fechar_banco(
+            conexao,
+            cursor
+        )
+
+
     if usuario is None:
-        return "E-mail ou senha incorretos."
- 
-    if not check_password_hash(usuario["senha"], senha):
-        return "E-mail ou senha incorretos."
- 
-   
+
+        return (
+            "E-mail ou senha incorretos."
+        )
+
+
+    if not check_password_hash(
+        usuario["senha"],
+        senha
+    ):
+
+        return (
+            "E-mail ou senha incorretos."
+        )
+
+
     session.clear()
-    session["usuario_id"] = usuario["id_usuario"]
-    session["usuario_nome"] = usuario["nome"]
- 
-    return redirect(url_for("land"))
- 
+
+    session["usuario_id"] = (
+        usuario["id_usuario"]
+    )
+
+    session["usuario_nome"] = (
+        usuario["nome"]
+    )
+
+
+    return redirect(
+        url_for("land")
+    )
+
 
 # =========================================================
 # LOGOUT
@@ -554,6 +654,7 @@ def catalogo():
                 descricao_prod,
                 preco_prod,
                 marca_produto,
+                modelo_scania,
                 categoria,
                 imagem,
                 estoque
@@ -579,14 +680,17 @@ def catalogo():
                     descricao_prod LIKE %s
                     OR marca_produto LIKE %s
                     OR categoria LIKE %s
+                    OR modelo_scania LIKE %s
                 )
             """
+
 
             termo = f"%{pesquisa}%"
 
 
             valores.extend(
                 [
+                    termo,
                     termo,
                     termo,
                     termo
@@ -598,19 +702,19 @@ def catalogo():
         # CATEGORIA
         # =================================================
 
-        if categoria and categoria.lower() != "todos":
-
-            # =================================================
-            # CORREÇÃO DO FILTRO
-            #
-            # Aceita diferenças entre letras maiúsculas,
-            # minúsculas e acentuação.
-            # =================================================
+        if (
+            categoria
+            and categoria.lower() != "todos"
+        ):
 
             sql += """
-                AND LOWER(categoria) COLLATE utf8mb4_general_ci
-                    = LOWER(%s) COLLATE utf8mb4_general_ci
+                AND LOWER(categoria)
+                    COLLATE utf8mb4_general_ci
+                    =
+                    LOWER(%s)
+                    COLLATE utf8mb4_general_ci
             """
+
 
             valores.append(
                 categoria
@@ -626,11 +730,19 @@ def catalogo():
         """
 
 
+        # =================================================
+        # EXECUTAR SQL
+        # =================================================
+
         cursor.execute(
             sql,
             valores
         )
 
+
+        # =================================================
+        # PEGAR PRODUTOS
+        # =================================================
 
         products = cursor.fetchall()
 
@@ -650,6 +762,10 @@ def catalogo():
         )
 
 
+    # =====================================================
+    # ENVIAR PRODUTOS PARA O HTML
+    # =====================================================
+
     return render_template(
         "catalogo.html",
         products=products,
@@ -664,7 +780,7 @@ def catalogo():
 
 @app.route(
     "/add_to_cart/<int:product_id>",
-    methods=["POST"]
+    methods=["GET", "POST"]
 )
 def add_to_cart(product_id):
 
@@ -678,10 +794,19 @@ def add_to_cart(product_id):
             url_for("login")
         )
 
+    id_usuario = session["usuario_id"]
 
-    id_usuario = session[
-        "usuario_id"
-    ]
+    if not usuario_existe(id_usuario):
+
+        session.clear()
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "aviso"
+        )
+
+        return redirect(
+            url_for("login")
+        )
 
 
     conexao = None
@@ -712,6 +837,7 @@ def add_to_cart(product_id):
 
             WHERE id_produto = %s
             """,
+
             (product_id,)
         )
 
@@ -721,7 +847,9 @@ def add_to_cart(product_id):
 
         if produto is None:
 
-            return "Produto não encontrado."
+            return (
+                "Produto não encontrado."
+            )
 
 
         # =================================================
@@ -750,6 +878,7 @@ def add_to_cart(product_id):
             WHERE id_produto = %s
             AND id_usuario = %s
             """,
+
             (
                 product_id,
                 id_usuario
@@ -775,7 +904,10 @@ def add_to_cart(product_id):
             # LIMITAR AO ESTOQUE
             # =============================================
 
-            if nova_quantidade > produto["estoque"]:
+            if (
+                nova_quantidade
+                > produto["estoque"]
+            ):
 
                 return (
                     "Você atingiu o limite "
@@ -800,6 +932,7 @@ def add_to_cart(product_id):
                 WHERE id_carrinho = %s
                 AND id_usuario = %s
                 """,
+
                 (
                     nova_quantidade,
                     novo_subtotal,
@@ -833,6 +966,7 @@ def add_to_cart(product_id):
                     %s
                 )
                 """,
+
                 (
                     product_id,
                     id_usuario,
@@ -865,8 +999,20 @@ def add_to_cart(product_id):
         )
 
 
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
+        return jsonify({
+            "success": True,
+            "message": "Produto adicionado ao carrinho!"
+        })
+
+    flash(
+        "Produto adicionado ao carrinho!",
+        "sucesso"
+    )
+
     return redirect(
-        url_for("carrinho")
+        url_for("catalogo")
     )
 
 
@@ -883,10 +1029,19 @@ def carrinho():
             url_for("login")
         )
 
+    id_usuario = session["usuario_id"]
 
-    id_usuario = session[
-        "usuario_id"
-    ]
+    if not usuario_existe(id_usuario):
+
+        session.clear()
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "aviso"
+        )
+
+        return redirect(
+            url_for("login")
+        )
 
 
     conexao = None
@@ -930,6 +1085,7 @@ def carrinho():
 
             ORDER BY c.id_carrinho DESC
             """,
+
             (id_usuario,)
         )
 
@@ -985,6 +1141,18 @@ def aumentar_quantidade(cart_id):
             url_for("login")
         )
 
+    if not usuario_existe(session["usuario_id"]):
+
+        session.clear()
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "aviso"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
 
     conexao = None
     cursor = None
@@ -1018,6 +1186,7 @@ def aumentar_quantidade(cart_id):
             WHERE c.id_carrinho = %s
             AND c.id_usuario = %s
             """,
+
             (
                 cart_id,
                 session["usuario_id"]
@@ -1030,14 +1199,19 @@ def aumentar_quantidade(cart_id):
 
         if item is None:
 
-            return "Item não encontrado."
+            return (
+                "Item não encontrado."
+            )
 
 
         # =================================================
         # VERIFICAR ESTOQUE
         # =================================================
 
-        if item["quantidade"] >= item["estoque"]:
+        if (
+            item["quantidade"]
+            >= item["estoque"]
+        ):
 
             return (
                 "Quantidade máxima "
@@ -1071,6 +1245,7 @@ def aumentar_quantidade(cart_id):
             WHERE id_carrinho = %s
             AND id_usuario = %s
             """,
+
             (
                 nova_quantidade,
                 novo_subtotal,
@@ -1122,6 +1297,18 @@ def diminuir_quantidade(cart_id):
             url_for("login")
         )
 
+    if not usuario_existe(session["usuario_id"]):
+
+        session.clear()
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "aviso"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
 
     conexao = None
     cursor = None
@@ -1149,6 +1336,7 @@ def diminuir_quantidade(cart_id):
             WHERE id_carrinho = %s
             AND id_usuario = %s
             """,
+
             (
                 cart_id,
                 session["usuario_id"]
@@ -1185,6 +1373,7 @@ def diminuir_quantidade(cart_id):
                     WHERE c.id_carrinho = %s
                     AND c.id_usuario = %s
                     """,
+
                     (
                         cart_id,
                         session["usuario_id"]
@@ -1205,6 +1394,7 @@ def diminuir_quantidade(cart_id):
                     WHERE id_carrinho = %s
                     AND id_usuario = %s
                     """,
+
                     (
                         cart_id,
                         session["usuario_id"]
@@ -1254,6 +1444,18 @@ def remove_from_cart(cart_id):
             url_for("login")
         )
 
+    if not usuario_existe(session["usuario_id"]):
+
+        session.clear()
+        flash(
+            "Sua sessão expirou. Faça login novamente.",
+            "aviso"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
 
     conexao = None
     cursor = None
@@ -1273,6 +1475,7 @@ def remove_from_cart(cart_id):
             WHERE id_carrinho = %s
             AND id_usuario = %s
             """,
+
             (
                 cart_id,
                 session["usuario_id"]

@@ -1,10 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Carrinho | Truck Parts</title>
     <link
       rel="stylesheet"
@@ -13,95 +11,63 @@
   </head>
 
   <body>
-    <header class="topo">TRUCK PARTS</header>
+    <div class="topo">CARRINHO</div>
 
-    <main class="container">
-      <div class="titulo">
-        <h1>Meu carrinho</h1>
-
-        <p>Confira seus produtos antes de continuar.</p>
-      </div>
-
-      {% if items %} {% for item in items %}
-
-      <article class="produto">
-        <div class="imagem">
-          <img
-            src="{{ url_for(
-                        'static',
-                        filename=item.imagem
-                    ) }}"
-            alt="{{ item.descricao_prod }}"
-          />
+    <div class="container">
+      {% if items %}
+        <div class="titulo">
+          <h1>Seu carrinho</h1>
+          <p>{{ items|length }} item(s) no pedido</p>
         </div>
 
-        <div class="informacoes">
-          <h2>{{ item.descricao_prod }}</h2>
+        {% for item in items %}
+          <div class="produto">
+            <div class="imagem">
+              <img
+                src="{{ url_for('static', filename=item.imagem) }}"
+                alt="{{ item.descricao_prod }}"
+              />
+            </div>
 
-          <p>{{ item.marca_produto }}</p>
+            <div class="informacoes">
+              <h2>{{ item.descricao_prod }}</h2>
+              <p>Marca: {{ item.marca_produto }} | Categoria: {{ item.categoria }}</p>
+              <p>Estoque disponível: {{ item.estoque }}</p>
+            </div>
 
-          <p>{{ item.categoria }}</p>
+            <div class="quantidade">
+              <form method="post" action="{{ url_for('diminuir_quantidade', cart_id=item.id_carrinho) }}">
+                <button type="submit" aria-label="Diminuir quantidade">-</button>
+              </form>
+
+              <span class="numero">{{ item.quantidade }}</span>
+
+              <form method="post" action="{{ url_for('aumentar_quantidade', cart_id=item.id_carrinho) }}">
+                <button type="submit" aria-label="Aumentar quantidade">+</button>
+              </form>
+            </div>
+
+            <div class="preco">R$ {{ "%.2f"|format(item.subtotal) }}</div>
+
+            <form method="post" action="{{ url_for('remove_from_cart', cart_id=item.id_carrinho) }}">
+              <button class="remover" type="submit">Remover</button>
+            </form>
+          </div>
+        {% endfor %}
+
+        <div class="total">
+          <span>Total do carrinho</span>
+          <span class="valor">R$ {{ "%.2f"|format(total) }}</span>
         </div>
-
-        <div class="quantidade">
-          <form
-            method="post"
-            action="{{ url_for(
-                        'diminuir_quantidade',
-                        cart_id=item.id_carrinho
-                    ) }}"
-          >
-            <button type="submit">−</button>
-          </form>
-
-          <span class="numero"> {{ item.quantidade }} </span>
-
-          <form
-            method="post"
-            action="{{ url_for(
-                        'aumentar_quantidade',
-                        cart_id=item.id_carrinho
-                    ) }}"
-          >
-            <button type="submit">+</button>
-          </form>
-        </div>
-
-        <div class="preco">R$ {{ "%.2f"|format(item.subtotal) }}</div>
-
-        <form
-          method="post"
-          action="{{ url_for(
-                    'remove_from_cart',
-                    cart_id=item.id_carrinho
-                ) }}"
-        >
-          <button class="remover" type="submit">Remover</button>
-        </form>
-      </article>
-
-      {% endfor %}
-
-      <div class="total">
-        <strong> Total do pedido </strong>
-
-        <span class="valor"> R$ {{ "%.2f"|format(total) }} </span>
-      </div>
-
       {% else %}
-
-      <div class="vazio">
-        <h2>Seu carrinho está vazio</h2>
-
-        <p>Adicione produtos ao carrinho para continuar.</p>
-
-        <a href="{{ url_for('catalogo') }}"> Ir para o catálogo </a>
-      </div>
-
+        <div class="vazio">
+          <h2>Seu carrinho está vazio</h2>
+          <p>Adicione produtos para continuar sua compra.</p>
+          <a href="{{ url_for('catalogo') }}">Ir para o catálogo</a>
+        </div>
       {% endif %}
 
-      <a class="voltar" href="{{ url_for('catalogo') }}">
-        ← Continuar comprando</a>
-        </form>
+      <a class="voltar" href="{{ url_for('catalogo') }}">← Continuar comprando</a>
+    </div>
   </body>
 </html>

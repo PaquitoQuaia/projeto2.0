@@ -494,11 +494,21 @@ a {
            SLIDER DE CATEGORIAS
         ========================= */
 
+.prod-slider-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 1180px;
+  margin: 50px auto 0;
+}
+
 .prod-slider {
   position: relative;
   width: 100%;
   max-width: 1100px;
-  margin: 50px auto 0;
   overflow: hidden;
 }
 
@@ -564,18 +574,6 @@ a {
   font-size: 20px;
 }
 
-.categoria h2 span {
-  width: 23px;
-  height: 23px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e30613;
-  color: #fff;
-  border-radius: 50%;
-  font-size: 22px;
-}
-
 /* =========================
            BOLINHAS PRODUTOS
         ========================= */
@@ -600,16 +598,37 @@ a {
   transform: scale(1.2);
 }
 
-#p_slide1:checked ~ .prod-slider .prod-slides {
+#p_slide1:checked ~ .prod-slider-wrap .prod-slider .prod-slides {
   transform: translateX(0);
 }
 
-#p_slide2:checked ~ .prod-slider .prod-slides {
+#p_slide2:checked ~ .prod-slider-wrap .prod-slider .prod-slides {
   transform: translateX(-33.3333%);
 }
 
-#p_slide3:checked ~ .prod-slider .prod-slides {
+#p_slide3:checked ~ .prod-slider-wrap .prod-slider .prod-slides {
   transform: translateX(-66.6666%);
+}
+
+.seta-produto {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.seta-produto:hover {
+  opacity: 0.9;
 }
 
 #p_slide1:checked ~ .bolinhas-produtos label:nth-child(1),
@@ -877,4 +896,48 @@ summary {
 summary::-webkit-details-marker {
   position: relative;
   display: none;
+}
+
+
+.prod-slider {
+    position: relative;
+}
+
+.seta-produto {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #e30613;
+    color: white;
+
+    font-size: 25px;
+    font-weight: bold;
+
+    cursor: pointer;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.seta-produto:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.seta-esquerda {
+    left: -20px;
+}
+
+.seta-direita {
+    right: -20px;
 }

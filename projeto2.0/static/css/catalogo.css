@@ -418,6 +418,14 @@
         }
 
         .carrinho span {
-          display: none;
-        }
+          display: none; 
       }
+       /* =========================
+           MODELO
+        ========================= */
+        .modelo {
+          color: #777;
+          font-size: 13px;
+          margin-top: 5px;
+        }
+    }

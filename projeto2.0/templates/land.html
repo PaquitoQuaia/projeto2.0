@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/land.css') }}"
     />
+    <script defer src="{{ url_for('static', filename='JS/land.js') }}"></script>
   </head>
 
   <body>
@@ -38,12 +39,7 @@
             class="carrinho-btn"
             title="Carrinho de compras"
           >
-            <img
-              src="{{ url_for('static', filename='imagens/carrinho.png') }}"
-              width="35"
-              height="35"
-              alt="Carrinho"
-            />
+            <img/>
           </a>
           <!-- PERFIL COM DROPDOWN (COM LOGIN) -->
 
@@ -83,7 +79,12 @@
             </span>
 
             <a href="{{ url_for('carrinho') }}">
-                Meu carrinho
+                <img src="{{ url_for('static', filename='imagens/carrinho.png') }}"/
+                height="20"
+                width="20"
+                top-margin="5"
+                alt="Carrinho"
+                > Carrinho
             </a>
 
             <a href="{{ url_for('logout') }}">
@@ -302,122 +303,122 @@
 
         <!-- SLIDER -->
 
-        <div class="prod-slider">
-          <div class="prod-slides">
-            <!-- SLIDE 1 -->
+        <div class="prod-slider-wrap">
+          <button
+            type="button"
+            class="seta-produto seta-esquerda"
+            aria-label="Produto anterior"
+          >
+            ❮
+          </button>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Freios"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/freio.jpg') }}"
-                    alt="Peças de freio"
-                  />
-                </div>
+          <div class="prod-slider">
+            <div class="prod-slides">
+              <!-- SLIDE 1 -->
 
-                <h2>
-                  <span>›</span>
-                  Freios
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Freios"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/freio.jpg') }}"
+                      alt="Peças de freio"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Motor"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/motor.jpg') }}"
-                    alt="Peças de motor"
-                  />
-                </div>
+                  <h2>Freios</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Motor
-                </h2>
-              </a>
-            </div>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Motor"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/junta_cabecote.png') }}"
+                      alt="Peças de motor"
+                    />
+                  </div>
 
-            <!-- SLIDE 2 -->
+                  <h2>Motor</h2>
+                </a>
+              </div>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Suspensão"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/suspensão.webp') }}"
-                    alt="Peças de suspensão"
-                  />
-                </div>
+              <!-- SLIDE 2 -->
 
-                <h2>
-                  <span>›</span>
-                  Suspensão
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Suspensão"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/suspensão.webp') }}"
+                      alt="Peças de suspensão"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Filtros"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/filtro.jpg') }}"
-                    alt="Filtros para caminhão"
-                  />
-                </div>
+                  <h2>Suspensão</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Filtros
-                </h2>
-              </a>
-            </div>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Filtros"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/filtro.jpg') }}"
+                      alt="Filtros para caminhão"
+                    />
+                  </div>
 
-            <!-- SLIDE 3 -->
+                  <h2>Filtros</h2>
+                </a>
+              </div>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo', categoria='Bomba d\'água') }}"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/chassi.jpg') }}"
-                    alt="Bomba d'água"
-                  />
-                </div>
+              <!-- SLIDE 3 -->
 
-                <h2>
-                  <span>›</span>
-                  Bomba d'água
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo', categoria='Bomba d\'água') }}"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/bomba_dagua.png') }}"
+                      alt="Bomba d'água"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Faróis"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/distribuidora.webp') }}"
-                    alt="Faróis"
-                  />
-                </div>
+                  <h2>Bomba d'água</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Faróis
-                </h2>
-              </a>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Iluminação"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/farol.png') }}"
+                      alt="Faróis"
+                    />
+                  </div>
+
+                  <h2>Faróis</h2>
+                </a>
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            class="seta-produto seta-direita"
+            aria-label="Próximo produto"
+          >
+            ❯
+          </button>
         </div>
 
         <!-- BOLINHAS -->

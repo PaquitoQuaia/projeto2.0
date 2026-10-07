@@ -160,6 +160,7 @@
           <h2>{{ codigo }}</h2>
           <p class="descricao-produto">{{ tipo }}</p>
           <div class="marca">Marca: {{ p.marca_produto }}</div>
+         <div class="modelo">Modelo: {{ p.modelo_scania }}</div>
           <div class="preco">R$ {{ "%.2f"|format(p.preco_prod) }}</div>
           <div class="estoque">Estoque: {{ p.estoque }}</div>
         </div>
@@ -217,6 +218,8 @@
         }
       })();
     </script>
+
+    <script src="{{ url_for('static', filename='JS/carrinho.js') }}"></script>
 
     {% else %}
 
