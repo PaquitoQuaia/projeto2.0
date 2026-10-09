@@ -258,6 +258,32 @@
         font-weight: bold;
       }
 
+      .finalizar {
+        display: block;
+
+        width: fit-content;
+
+        margin: 20px 0 0 auto;
+
+        padding: 14px 28px;
+
+        background: #e30613;
+
+        color: white;
+
+        text-decoration: none;
+
+        border-radius: 10px;
+
+        font-weight: bold;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      }
+      .finalizar:hover {
+        background: #b9000c;
+        transform: scale(1.02);
+      }
+
       @media (max-width: 700px) {
         .produto {
           flex-wrap: wrap;

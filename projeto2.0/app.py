@@ -1,5 +1,11 @@
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import (
+    Flask,
+    render_template,
+    request,
+    session,
+    redirect,
+    url_for
+)
 
 import mysql.connector
 import os
@@ -22,10 +28,7 @@ app = Flask(
     static_folder="static"
 )
 
-app.secret_key = os.getenv(
-    "SECRET_KEY",
-    "truck_parts_chave"
-)
+app.secret_key = os.getenv("SECRET_KEY", "truck_parts_chave")
 
 
 # =========================================================
@@ -35,25 +38,10 @@ app.secret_key = os.getenv(
 def conectar_banco():
 
     return mysql.connector.connect(
-        host=os.getenv(
-            "MYSQL_HOST",
-            "127.0.0.1"
-        ),
-
-        user=os.getenv(
-            "MYSQL_USER",
-            "root"
-        ),
-
-        password=os.getenv(
-            "MYSQL_PASSWORD",
-            "senai105"
-        ),
-
-        database=os.getenv(
-            "MYSQL_DATABASE",
-            "DB_truck_prts"
-        )
+        host=os.getenv("MYSQL_HOST", "127.0.0.1"),
+        user=os.getenv("MYSQL_USER", "root"),
+        password=os.getenv("MYSQL_PASSWORD", "senai105"),
+        database=os.getenv("MYSQL_DATABASE", "DB_truck_prts")
     )
 
 
@@ -66,41 +54,6 @@ def fechar_banco(conexao, cursor):
         conexao.close()
 
 
-def usuario_existe(id_usuario):
-
-    conexao = None
-    cursor = None
-
-    try:
-
-        conexao = conectar_banco()
-        cursor = conexao.cursor()
-
-        cursor.execute(
-            """
-            SELECT 1
-
-            FROM USUARIO
-
-            WHERE id_usuario = %s
-            """,
-            (id_usuario,)
-        )
-
-        return cursor.fetchone() is not None
-
-    except Error:
-
-        return False
-
-    finally:
-
-        fechar_banco(
-            conexao,
-            cursor
-        )
-
-
 # =========================================================
 # USUÁRIO LOGADO
 # =========================================================
@@ -110,9 +63,7 @@ def injetar_usuario():
 
     return {
         "logado": "usuario_id" in session,
-        "usuario_nome": session.get(
-            "usuario_nome"
-        )
+        "usuario_nome": session.get("usuario_nome")
     }
 
 
@@ -123,9 +74,7 @@ def injetar_usuario():
 @app.route("/")
 def land():
 
-    return render_template(
-        "land.html"
-    )
+    return render_template("land.html")
 
 
 # =========================================================
@@ -135,82 +84,30 @@ def land():
 @app.route("/cadastro")
 def cadastro():
 
-    return render_template(
-        "cadastro.html"
-    )
+    return render_template("cadastro.html")
 
 
 # =========================================================
 # CADASTRO - PROCESSAMENTO
 # =========================================================
 
-@app.route(
-    "/cadastrar",
-    methods=["POST"]
-)
+@app.route("/cadastrar", methods=["POST"])
 def fazer_cadastro():
 
-    nome = request.form.get(
-        "nome",
-        ""
-    ).strip()
-
-    data_nascimento = request.form.get(
-        "data_nascimento",
-        ""
-    ).strip()
-
-    cpf = request.form.get(
-        "cpf",
-        ""
-    ).strip()
-
-    telefone = request.form.get(
-        "telefone",
-        ""
-    ).strip()
-
-    email = request.form.get(
-        "email",
-        ""
-    ).strip().lower()
-
-    senha = request.form.get(
-        "senha",
-        ""
-    )
-
-    confirmar_senha = request.form.get(
-        "confirmar_senha",
-        ""
-    )
-
-    cep = request.form.get(
-        "cep",
-        ""
-    ).strip()
-
-    numero = request.form.get(
-        "numero",
-        ""
-    ).strip()
-
-    complemento = request.form.get(
-        "complemento",
-        ""
-    ).strip()
-
-    tipo_cadastro = request.form.get(
-        "tipo_cadastro",
-        ""
-    ).strip()
-
-    interesses = request.form.getlist(
-        "interesses"
-    )
+    nome = request.form.get("nome", "").strip()
+    data_nascimento = request.form.get("data_nascimento", "").strip()
+    cpf = request.form.get("cpf", "").strip()
+    telefone = request.form.get("telefone", "").strip()
+    email = request.form.get("email", "").strip().lower()
+    senha = request.form.get("senha", "")
+    confirmar_senha = request.form.get("confirmar_senha", "")
+    cep = request.form.get("cep", "").strip()
+    numero = request.form.get("numero", "").strip()
+    complemento = request.form.get("complemento", "").strip()
+    tipo_cadastro = request.form.get("tipo_cadastro", "").strip()
 
     interesses_texto = ", ".join(
-        interesses
+        request.form.getlist("interesses")
     )
 
 
@@ -249,27 +146,16 @@ def fazer_cadastro():
         return "As senhas não coincidem."
 
     if len(senha) < 6:
-        return (
-            "A senha deve possuir pelo menos 6 caracteres."
-        )
+        return "A senha deve possuir pelo menos 6 caracteres."
 
 
     # =====================================================
     # LIMPAR CPF / TELEFONE / CEP
     # =====================================================
 
-    cpf = "".join(
-        filter(str.isdigit, cpf)
-    )
-
-    telefone = "".join(
-        filter(str.isdigit, telefone)
-    )
-
-    cep = "".join(
-        filter(str.isdigit, cep)
-    )
-
+    cpf = "".join(filter(str.isdigit, cpf))
+    telefone = "".join(filter(str.isdigit, telefone))
+    cep = "".join(filter(str.isdigit, cep))
 
     if len(cpf) != 11:
         return "CPF inválido."
@@ -281,133 +167,55 @@ def fazer_cadastro():
         return "CEP inválido."
 
 
-    # =====================================================
-    # CRIPTOGRAFAR SENHA
-    # =====================================================
-
-    senha_hash = generate_password_hash(
-        senha
-    )
-
+    senha_hash = generate_password_hash(senha)
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
-
         cursor = conexao.cursor()
 
-
-        # =================================================
         # VERIFICAR EMAIL
-        # =================================================
-
         cursor.execute(
-            """
-            SELECT id_usuario
-
-            FROM USUARIO
-
-            WHERE email = %s
-            """,
-
+            "SELECT id_usuario FROM USUARIO WHERE email = %s",
             (email,)
         )
 
         if cursor.fetchone():
+            return "Este e-mail já está cadastrado."
 
-            return (
-                "Este e-mail já está cadastrado."
-            )
-
-
-        # =================================================
         # VERIFICAR CPF
-        # =================================================
-
         cursor.execute(
-            """
-            SELECT id_usuario
-
-            FROM USUARIO
-
-            WHERE cpf = %s
-            """,
-
+            "SELECT id_usuario FROM USUARIO WHERE cpf = %s",
             (cpf,)
         )
 
         if cursor.fetchone():
+            return "Este CPF já está cadastrado."
 
-            return (
-                "Este CPF já está cadastrado."
-            )
-
-
-        # =================================================
         # VERIFICAR TELEFONE
-        # =================================================
-
         cursor.execute(
-            """
-            SELECT id_usuario
-
-            FROM USUARIO
-
-            WHERE telefone = %s
-            """,
-
+            "SELECT id_usuario FROM USUARIO WHERE telefone = %s",
             (telefone,)
         )
 
         if cursor.fetchone():
+            return "Este telefone já está cadastrado."
 
-            return (
-                "Este telefone já está cadastrado."
-            )
-
-
-        # =================================================
         # CADASTRAR ENDEREÇO
-        # =================================================
-
         cursor.execute(
             """
-            INSERT INTO ENDERECO
-            (
-                cep,
-                numero,
-                complemento
-            )
-
-            VALUES
-            (
-                %s,
-                %s,
-                %s
-            )
+            INSERT INTO ENDERECO (cep, numero, complemento)
+            VALUES (%s, %s, %s)
             """,
-
-            (
-                cep,
-                numero,
-                complemento
-                if complemento
-                else None
-            )
+            (cep, numero, complemento if complemento else None)
         )
-
 
         id_endereco = cursor.lastrowid
 
-
-        # =================================================
         # CADASTRAR USUÁRIO
-        # =================================================
-
         cursor.execute(
             """
             INSERT INTO USUARIO
@@ -422,21 +230,8 @@ def fazer_cadastro():
                 tipo_cadastro,
                 interesses
             )
-
-            VALUES
-            (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
-
             (
                 id_endereco,
                 nome,
@@ -450,153 +245,84 @@ def fazer_cadastro():
             )
         )
 
-
         conexao.commit()
 
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     except Error as erro:
 
         if conexao:
             conexao.rollback()
 
-        return (
-            f"Erro ao realizar cadastro: {erro}"
-        )
-
+        return f"Erro ao realizar cadastro: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
+        fechar_banco(conexao, cursor)
 
 
 # =========================================================
 # LOGIN - PÁGINA
 # =========================================================
 
-@app.route(
-    "/login",
-    methods=["GET"]
-)
+@app.route("/login", methods=["GET"])
 def login():
 
+    # Se já estiver logado, não precisa ver a tela de login
     if "usuario_id" in session:
+        return redirect(url_for("land"))
 
-        return redirect(
-            url_for("land")
-        )
-
-    return render_template(
-        "login.html"
-    )
+    return render_template("login.html")
 
 
 # =========================================================
 # LOGIN - PROCESSAMENTO
 # =========================================================
 
-@app.route(
-    "/login",
-    methods=["POST"]
-)
+@app.route("/login", methods=["POST"])
 def fazer_login():
 
-    email = request.form.get(
-        "email",
-        ""
-    ).strip().lower()
-
-    senha = request.form.get(
-        "senha",
-        ""
-    )
-
+    email = request.form.get("email", "").strip().lower()
+    senha = request.form.get("senha", "")
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
-
-        cursor = conexao.cursor(
-            dictionary=True
-        )
-
+        cursor = conexao.cursor(dictionary=True)
 
         cursor.execute(
             """
-            SELECT
-                id_usuario,
-                nome,
-                senha
-
+            SELECT id_usuario, nome, senha
             FROM USUARIO
-
             WHERE email = %s
             """,
-
             (email,)
         )
 
-
         usuario = cursor.fetchone()
-
 
     except Error as erro:
 
-        return (
-            f"Erro ao acessar o banco: {erro}"
-        )
-
+        return f"Erro ao acessar o banco: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
-
+        fechar_banco(conexao, cursor)
 
     if usuario is None:
+        return "E-mail ou senha incorretos."
 
-        return (
-            "E-mail ou senha incorretos."
-        )
-
-
-    if not check_password_hash(
-        usuario["senha"],
-        senha
-    ):
-
-        return (
-            "E-mail ou senha incorretos."
-        )
-
+    if not check_password_hash(usuario["senha"], senha):
+        return "E-mail ou senha incorretos."
 
     session.clear()
+    session["usuario_id"] = usuario["id_usuario"]
+    session["usuario_nome"] = usuario["nome"]
 
-    session["usuario_id"] = (
-        usuario["id_usuario"]
-    )
-
-    session["usuario_nome"] = (
-        usuario["nome"]
-    )
-
-
-    return redirect(
-        url_for("land")
-    )
+    return redirect(url_for("land"))
 
 
 # =========================================================
@@ -608,9 +334,7 @@ def logout():
 
     session.clear()
 
-    return redirect(
-        url_for("land")
-    )
+    return redirect(url_for("land"))
 
 
 # =========================================================
@@ -620,33 +344,16 @@ def logout():
 @app.route("/catalogo")
 def catalogo():
 
-    pesquisa = request.args.get(
-        "q",
-        ""
-    ).strip()
-
-    categoria = request.args.get(
-        "categoria",
-        ""
-    ).strip()
-
+    pesquisa = request.args.get("q", "").strip()
+    categoria = request.args.get("categoria", "").strip()
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
-
-        cursor = conexao.cursor(
-            dictionary=True
-        )
-
-
-        # =================================================
-        # CONSULTA DOS PRODUTOS
-        # =================================================
+        cursor = conexao.cursor(dictionary=True)
 
         sql = """
             SELECT
@@ -664,14 +371,9 @@ def catalogo():
             WHERE 1 = 1
         """
 
-
         valores = []
 
-
-        # =================================================
         # PESQUISA
-        # =================================================
-
         if pesquisa:
 
             sql += """
@@ -680,91 +382,36 @@ def catalogo():
                     descricao_prod LIKE %s
                     OR marca_produto LIKE %s
                     OR categoria LIKE %s
-                    OR modelo_scania LIKE %s
                 )
             """
 
-
             termo = f"%{pesquisa}%"
 
+            valores.extend([termo, termo, termo])
 
-            valores.extend(
-                [
-                    termo,
-                    termo,
-                    termo,
-                    termo
-                ]
-            )
-
-
-        # =================================================
-        # CATEGORIA
-        # =================================================
-
-        if (
-            categoria
-            and categoria.lower() != "todos"
-        ):
+        # CATEGORIA (ignora diferenças de maiúsculas e acentos)
+        if categoria and categoria.lower() != "todos":
 
             sql += """
-                AND LOWER(categoria)
-                    COLLATE utf8mb4_general_ci
-                    =
-                    LOWER(%s)
-                    COLLATE utf8mb4_general_ci
+                AND LOWER(categoria) COLLATE utf8mb4_general_ci
+                    = LOWER(%s) COLLATE utf8mb4_general_ci
             """
 
+            valores.append(categoria)
 
-            valores.append(
-                categoria
-            )
+        sql += " ORDER BY id_produto ASC"
 
-
-        # =================================================
-        # ORDENAR
-        # =================================================
-
-        sql += """
-            ORDER BY id_produto ASC
-        """
-
-
-        # =================================================
-        # EXECUTAR SQL
-        # =================================================
-
-        cursor.execute(
-            sql,
-            valores
-        )
-
-
-        # =================================================
-        # PEGAR PRODUTOS
-        # =================================================
+        cursor.execute(sql, valores)
 
         products = cursor.fetchall()
 
-
     except Error as erro:
 
-        return (
-            f"Erro ao carregar catálogo: {erro}"
-        )
-
+        return f"Erro ao carregar catálogo: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
-
-
-    # =====================================================
-    # ENVIAR PRODUTOS PARA O HTML
-    # =====================================================
+        fechar_banco(conexao, cursor)
 
     return render_template(
         "catalogo.html",
@@ -775,245 +422,208 @@ def catalogo():
 
 
 # =========================================================
+# CARRINHO - CONFIGURAÇÃO
+#
+# Tabelas usadas:
+#   CARRINHO      (id_carrinho, id_usuario, quantidade, sub, s_carrinho)
+#   ITEM_CARRINHO (id_carrinho, id_produto, quantidade, preco_unitario)
+#
+# CARRINHO.quantidade = total de unidades no carrinho
+# CARRINHO.sub        = subtotal do carrinho
+# CARRINHO.s_carrinho = situação do carrinho. O carrinho em uso
+#                       é o que tem s_carrinho = STATUS_ABERTO.
+# =========================================================
+
+STATUS_ABERTO = "aberto"
+
+
+# =========================================================
+# CARRINHO - FUNÇÕES AUXILIARES
+# (o cursor precisa ser criado com dictionary=True)
+# =========================================================
+
+def obter_carrinho_aberto(cursor, id_usuario, criar=False):
+
+    cursor.execute(
+        """
+        SELECT id_carrinho
+        FROM CARRINHO
+        WHERE id_usuario = %s
+        AND s_carrinho = %s
+        ORDER BY id_carrinho DESC
+        LIMIT 1
+        """,
+        (id_usuario, STATUS_ABERTO)
+    )
+
+    linha = cursor.fetchone()
+
+    if linha:
+        return linha["id_carrinho"]
+
+    if not criar:
+        return None
+
+    cursor.execute(
+        """
+        INSERT INTO CARRINHO
+        (
+            id_usuario,
+            quantidade,
+            sub,
+            s_carrinho
+        )
+        VALUES (%s, 0, 0.00, %s)
+        """,
+        (id_usuario, STATUS_ABERTO)
+    )
+
+    return cursor.lastrowid
+
+
+def atualizar_totais_carrinho(cursor, id_carrinho):
+
+    # Recalcula quantidade e sub do carrinho a partir dos itens
+    cursor.execute(
+        """
+        UPDATE CARRINHO
+
+        SET
+            quantidade = (
+                SELECT COALESCE(SUM(i.quantidade), 0)
+                FROM ITEM_CARRINHO i
+                WHERE i.id_carrinho = %s
+            ),
+            sub = (
+                SELECT COALESCE(SUM(i.quantidade * i.preco_unitario), 0)
+                FROM ITEM_CARRINHO i
+                WHERE i.id_carrinho = %s
+            )
+
+        WHERE id_carrinho = %s
+        """,
+        (id_carrinho, id_carrinho, id_carrinho)
+    )
+
+
+# =========================================================
 # ADICIONAR AO CARRINHO
 # =========================================================
 
-@app.route(
-    "/add_to_cart/<int:product_id>",
-    methods=["GET", "POST"]
-)
+@app.route("/add_to_cart/<int:product_id>", methods=["POST"])
 def add_to_cart(product_id):
 
-    # =====================================================
-    # VERIFICAR LOGIN
-    # =====================================================
-
     if "usuario_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     id_usuario = session["usuario_id"]
-
-    if not usuario_existe(id_usuario):
-
-        session.clear()
-        flash(
-            "Sua sessão expirou. Faça login novamente.",
-            "aviso"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
 
-        cursor = conexao.cursor(
-            dictionary=True
-        )
-
-
-        # =================================================
         # BUSCAR PRODUTO
-        # =================================================
-
         cursor.execute(
             """
-            SELECT
-                id_produto,
-                preco_prod,
-                estoque
-
+            SELECT id_produto, preco_prod, estoque
             FROM PRODUTO
-
             WHERE id_produto = %s
             """,
-
             (product_id,)
         )
 
-
         produto = cursor.fetchone()
 
-
         if produto is None:
-
-            return (
-                "Produto não encontrado."
-            )
-
-
-        # =================================================
-        # VERIFICAR ESTOQUE
-        # =================================================
+            return "Produto não encontrado."
 
         if produto["estoque"] <= 0:
+            return "Produto sem estoque."
 
-            return (
-                "Produto sem estoque."
-            )
-
-
-        # =================================================
-        # VERIFICAR CARRINHO
-        # =================================================
-
-        cursor.execute(
-            """
-            SELECT
-                id_carrinho,
-                quantidade
-
-            FROM CARRINHO
-
-            WHERE id_produto = %s
-            AND id_usuario = %s
-            """,
-
-            (
-                product_id,
-                id_usuario
-            )
+        # CARRINHO ABERTO (cria se não existir)
+        id_carrinho = obter_carrinho_aberto(
+            cursor,
+            id_usuario,
+            criar=True
         )
 
+        # O PRODUTO JÁ ESTÁ NO CARRINHO?
+        cursor.execute(
+            """
+            SELECT quantidade
+            FROM ITEM_CARRINHO
+            WHERE id_carrinho = %s
+            AND id_produto = %s
+            """,
+            (id_carrinho, product_id)
+        )
 
         item = cursor.fetchone()
 
-
-        # =================================================
-        # PRODUTO JÁ EXISTE
-        # =================================================
-
         if item:
 
-            nova_quantidade = (
-                item["quantidade"] + 1
-            )
+            nova_quantidade = item["quantidade"] + 1
 
-
-            # =============================================
-            # LIMITAR AO ESTOQUE
-            # =============================================
-
-            if (
-                nova_quantidade
-                > produto["estoque"]
-            ):
-
-                return (
-                    "Você atingiu o limite "
-                    "disponível em estoque."
-                )
-
-
-            novo_subtotal = (
-                produto["preco_prod"]
-                * nova_quantidade
-            )
-
+            if nova_quantidade > produto["estoque"]:
+                return "Você atingiu o limite disponível em estoque."
 
             cursor.execute(
                 """
-                UPDATE CARRINHO
-
+                UPDATE ITEM_CARRINHO
                 SET
                     quantidade = %s,
-                    subtotal = %s
-
+                    preco_unitario = %s
                 WHERE id_carrinho = %s
-                AND id_usuario = %s
+                AND id_produto = %s
                 """,
-
                 (
                     nova_quantidade,
-                    novo_subtotal,
-                    item["id_carrinho"],
-                    id_usuario
+                    produto["preco_prod"],
+                    id_carrinho,
+                    product_id
                 )
             )
-
-
-        # =================================================
-        # NOVO PRODUTO
-        # =================================================
 
         else:
 
             cursor.execute(
                 """
-                INSERT INTO CARRINHO
+                INSERT INTO ITEM_CARRINHO
                 (
+                    id_carrinho,
                     id_produto,
-                    id_usuario,
                     quantidade,
-                    subtotal
+                    preco_unitario
                 )
-
-                VALUES
-                (
-                    %s,
-                    %s,
-                    %s,
-                    %s
-                )
+                VALUES (%s, %s, 1, %s)
                 """,
-
                 (
+                    id_carrinho,
                     product_id,
-                    id_usuario,
-                    1,
                     produto["preco_prod"]
                 )
             )
 
+        atualizar_totais_carrinho(cursor, id_carrinho)
 
         conexao.commit()
-
 
     except Error as erro:
 
         if conexao:
-
             conexao.rollback()
 
-
-        return (
-            f"Erro ao adicionar produto: {erro}"
-        )
-
+        return f"Erro ao adicionar produto: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
+        fechar_banco(conexao, cursor)
 
-
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-
-        return jsonify({
-            "success": True,
-            "message": "Produto adicionado ao carrinho!"
-        })
-
-    flash(
-        "Produto adicionado ao carrinho!",
-        "sucesso"
-    )
-
-    return redirect(
-        url_for("catalogo")
-    )
+    return redirect(url_for("carrinho"))
 
 
 # =========================================================
@@ -1024,99 +634,63 @@ def add_to_cart(product_id):
 def carrinho():
 
     if "usuario_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     id_usuario = session["usuario_id"]
-
-    if not usuario_existe(id_usuario):
-
-        session.clear()
-        flash(
-            "Sua sessão expirou. Faça login novamente.",
-            "aviso"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
 
-        cursor = conexao.cursor(
-            dictionary=True
-        )
+        id_carrinho = obter_carrinho_aberto(cursor, id_usuario)
 
+        items = []
+        total = 0.0
 
-        # =================================================
-        # PRODUTOS DO CARRINHO
-        # =================================================
+        if id_carrinho:
 
-        cursor.execute(
-            """
-            SELECT
-                c.id_carrinho,
-                c.id_produto,
-                c.quantidade,
-                c.subtotal,
+            cursor.execute(
+                """
+                SELECT
+                    i.id_carrinho,
+                    i.id_produto,
+                    i.quantidade,
+                    i.preco_unitario,
+                    i.quantidade * i.preco_unitario AS subtotal,
 
-                p.descricao_prod,
-                p.preco_prod,
-                p.marca_produto,
-                p.categoria,
-                p.imagem,
-                p.estoque
+                    p.descricao_prod,
+                    p.marca_produto,
+                    p.categoria,
+                    p.imagem,
+                    p.estoque
 
-            FROM CARRINHO c
+                FROM ITEM_CARRINHO i
 
-            INNER JOIN PRODUTO p
-                ON c.id_produto = p.id_produto
+                INNER JOIN PRODUTO p
+                    ON p.id_produto = i.id_produto
 
-            WHERE c.id_usuario = %s
+                WHERE i.id_carrinho = %s
 
-            ORDER BY c.id_carrinho DESC
-            """,
+                ORDER BY i.id_produto
+                """,
+                (id_carrinho,)
+            )
 
-            (id_usuario,)
-        )
+            items = cursor.fetchall()
 
-
-        items = cursor.fetchall()
-
-
-        # =================================================
-        # TOTAL
-        # =================================================
-
-        total = sum(
-            float(item["subtotal"])
-            for item in items
-        )
-
+            total = sum(float(item["subtotal"]) for item in items)
 
     except Error as erro:
 
-        return (
-            f"Erro ao carregar carrinho: {erro}"
-        )
-
+        return f"Erro ao carregar carrinho: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
-
+        fechar_banco(conexao, cursor)
 
     return render_template(
         "carrinho.html",
@@ -1126,389 +700,327 @@ def carrinho():
 
 
 # =========================================================
-# AUMENTAR QUANTIDADE
+# FINALIZAR COMPRA
 # =========================================================
 
-@app.route(
-    "/aumentar_quantidade/<int:cart_id>",
-    methods=["POST"]
-)
-def aumentar_quantidade(cart_id):
+@app.route("/finalizar_compra", methods=["GET", "POST"])
+def finalizar_compra():
 
     if "usuario_id" not in session:
+        return redirect(url_for("login"))
 
-        return redirect(
-            url_for("login")
-        )
+    id_usuario = session["usuario_id"]
 
-    if not usuario_existe(session["usuario_id"]):
+    if request.method == "POST":
+        conexao = None
+        cursor = None
 
-        session.clear()
-        flash(
-            "Sua sessão expirou. Faça login novamente.",
-            "aviso"
-        )
+        try:
+            conexao = conectar_banco()
+            cursor = conexao.cursor(dictionary=True)
 
-        return redirect(
-            url_for("login")
-        )
+            id_carrinho = obter_carrinho_aberto(cursor, id_usuario)
 
+            if id_carrinho is not None:
+                cursor.execute(
+                    """
+                    DELETE FROM ITEM_CARRINHO
+                    WHERE id_carrinho = %s
+                    """,
+                    (id_carrinho,)
+                )
+
+                cursor.execute(
+                    """
+                    UPDATE CARRINHO
+                    SET quantidade = 0,
+                        sub = 0.00
+                    WHERE id_carrinho = %s
+                    """,
+                    (id_carrinho,)
+                )
+
+                conexao.commit()
+
+        except Error as erro:
+            if conexao:
+                conexao.rollback()
+            return f"Erro ao finalizar compra: {erro}"
+
+        finally:
+            fechar_banco(conexao, cursor)
+
+        return redirect(url_for("catalogo"))
 
     conexao = None
     cursor = None
 
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
+
+        id_carrinho = obter_carrinho_aberto(cursor, id_usuario)
+
+        items = []
+        total = 0.0
+
+        if id_carrinho:
+            cursor.execute(
+                """
+                SELECT
+                    i.id_carrinho,
+                    i.id_produto,
+                    i.quantidade,
+                    i.preco_unitario,
+                    i.quantidade * i.preco_unitario AS subtotal,
+
+                    p.descricao_prod,
+                    p.marca_produto,
+                    p.categoria,
+                    p.imagem
+
+                FROM ITEM_CARRINHO i
+
+                INNER JOIN PRODUTO p
+                    ON p.id_produto = i.id_produto
+
+                WHERE i.id_carrinho = %s
+
+                ORDER BY i.id_produto
+                """,
+                (id_carrinho,)
+            )
+
+            items = cursor.fetchall()
+            total = sum(float(item["subtotal"]) for item in items)
+
+    except Error as erro:
+        return f"Erro ao carregar finalização: {erro}"
+
+    finally:
+        fechar_banco(conexao, cursor)
+
+    return render_template(
+        "finalizar_compra.html",
+        items=items,
+        total=total
+    )
+
+
+# =========================================================
+# AUMENTAR QUANTIDADE
+# (o item é identificado pelo id do produto)
+# =========================================================
+
+@app.route("/aumentar_quantidade/<int:product_id>", methods=["POST"])
+def aumentar_quantidade(product_id):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    conexao = None
+    cursor = None
 
     try:
 
         conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
 
-        cursor = conexao.cursor(
-            dictionary=True
+        id_carrinho = obter_carrinho_aberto(
+            cursor,
+            session["usuario_id"]
         )
 
-
-        # =================================================
-        # BUSCAR ITEM + ESTOQUE
-        # =================================================
+        if id_carrinho is None:
+            return "Carrinho não encontrado."
 
         cursor.execute(
             """
             SELECT
-                c.quantidade,
+                i.quantidade,
                 p.preco_prod,
                 p.estoque
 
-            FROM CARRINHO c
+            FROM ITEM_CARRINHO i
 
             INNER JOIN PRODUTO p
-                ON c.id_produto = p.id_produto
+                ON p.id_produto = i.id_produto
 
-            WHERE c.id_carrinho = %s
-            AND c.id_usuario = %s
+            WHERE i.id_carrinho = %s
+            AND i.id_produto = %s
             """,
-
-            (
-                cart_id,
-                session["usuario_id"]
-            )
+            (id_carrinho, product_id)
         )
-
 
         item = cursor.fetchone()
 
-
         if item is None:
+            return "Item não encontrado."
 
-            return (
-                "Item não encontrado."
-            )
-
-
-        # =================================================
-        # VERIFICAR ESTOQUE
-        # =================================================
-
-        if (
-            item["quantidade"]
-            >= item["estoque"]
-        ):
-
-            return (
-                "Quantidade máxima "
-                "disponível em estoque."
-            )
-
-
-        nova_quantidade = (
-            item["quantidade"] + 1
-        )
-
-
-        novo_subtotal = (
-            nova_quantidade
-            * item["preco_prod"]
-        )
-
-
-        # =================================================
-        # ATUALIZAR
-        # =================================================
+        if item["quantidade"] >= item["estoque"]:
+            return "Quantidade máxima disponível em estoque."
 
         cursor.execute(
             """
-            UPDATE CARRINHO
-
+            UPDATE ITEM_CARRINHO
             SET
-                quantidade = %s,
-                subtotal = %s
-
+                quantidade = quantidade + 1,
+                preco_unitario = %s
             WHERE id_carrinho = %s
-            AND id_usuario = %s
+            AND id_produto = %s
             """,
-
-            (
-                nova_quantidade,
-                novo_subtotal,
-                cart_id,
-                session["usuario_id"]
-            )
+            (item["preco_prod"], id_carrinho, product_id)
         )
 
+        atualizar_totais_carrinho(cursor, id_carrinho)
 
         conexao.commit()
-
 
     except Error as erro:
 
         if conexao:
-
             conexao.rollback()
-
 
         return f"Erro: {erro}"
 
-
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
+        fechar_banco(conexao, cursor)
 
-
-    return redirect(
-        url_for("carrinho")
-    )
+    return redirect(url_for("carrinho"))
 
 
 # =========================================================
 # DIMINUIR QUANTIDADE
 # =========================================================
 
-@app.route(
-    "/diminuir_quantidade/<int:cart_id>",
-    methods=["POST"]
-)
-def diminuir_quantidade(cart_id):
+@app.route("/diminuir_quantidade/<int:product_id>", methods=["POST"])
+def diminuir_quantidade(product_id):
 
     if "usuario_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
-    if not usuario_existe(session["usuario_id"]):
-
-        session.clear()
-        flash(
-            "Sua sessão expirou. Faça login novamente.",
-            "aviso"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
 
-        cursor = conexao.cursor(
-            dictionary=True
+        id_carrinho = obter_carrinho_aberto(
+            cursor,
+            session["usuario_id"]
         )
 
+        if id_carrinho is not None:
 
-        # =================================================
-        # BUSCAR ITEM
-        # =================================================
-
-        cursor.execute(
-            """
-            SELECT quantidade
-
-            FROM CARRINHO
-
-            WHERE id_carrinho = %s
-            AND id_usuario = %s
-            """,
-
-            (
-                cart_id,
-                session["usuario_id"]
+            cursor.execute(
+                """
+                SELECT quantidade
+                FROM ITEM_CARRINHO
+                WHERE id_carrinho = %s
+                AND id_produto = %s
+                """,
+                (id_carrinho, product_id)
             )
-        )
 
+            item = cursor.fetchone()
 
-        item = cursor.fetchone()
+            if item:
 
+                if item["quantidade"] > 1:
 
-        if item:
-
-            # =============================================
-            # DIMINUIR
-            # =============================================
-
-            if item["quantidade"] > 1:
-
-                cursor.execute(
-                    """
-                    UPDATE CARRINHO c
-
-                    INNER JOIN PRODUTO p
-                        ON c.id_produto = p.id_produto
-
-                    SET
-                        c.quantidade =
-                            c.quantidade - 1,
-
-                        c.subtotal =
-                            (c.quantidade - 1)
-                            * p.preco_prod
-
-                    WHERE c.id_carrinho = %s
-                    AND c.id_usuario = %s
-                    """,
-
-                    (
-                        cart_id,
-                        session["usuario_id"]
+                    cursor.execute(
+                        """
+                        UPDATE ITEM_CARRINHO
+                        SET quantidade = quantidade - 1
+                        WHERE id_carrinho = %s
+                        AND id_produto = %s
+                        """,
+                        (id_carrinho, product_id)
                     )
-                )
 
+                else:
 
-            # =============================================
-            # REMOVER QUANDO CHEGAR A ZERO
-            # =============================================
-
-            else:
-
-                cursor.execute(
-                    """
-                    DELETE FROM CARRINHO
-
-                    WHERE id_carrinho = %s
-                    AND id_usuario = %s
-                    """,
-
-                    (
-                        cart_id,
-                        session["usuario_id"]
+                    # REMOVE QUANDO CHEGAR A ZERO
+                    cursor.execute(
+                        """
+                        DELETE FROM ITEM_CARRINHO
+                        WHERE id_carrinho = %s
+                        AND id_produto = %s
+                        """,
+                        (id_carrinho, product_id)
                     )
-                )
 
+                atualizar_totais_carrinho(cursor, id_carrinho)
 
         conexao.commit()
-
 
     except Error as erro:
 
         if conexao:
-
             conexao.rollback()
-
 
         return f"Erro: {erro}"
 
-
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
+        fechar_banco(conexao, cursor)
 
-
-    return redirect(
-        url_for("carrinho")
-    )
+    return redirect(url_for("carrinho"))
 
 
 # =========================================================
 # REMOVER DO CARRINHO
 # =========================================================
 
-@app.route(
-    "/remove_from_cart/<int:cart_id>",
-    methods=["POST"]
-)
-def remove_from_cart(cart_id):
+@app.route("/remove_from_cart/<int:product_id>", methods=["POST"])
+def remove_from_cart(product_id):
 
     if "usuario_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
-    if not usuario_existe(session["usuario_id"]):
-
-        session.clear()
-        flash(
-            "Sua sessão expirou. Faça login novamente.",
-            "aviso"
-        )
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     conexao = None
     cursor = None
 
-
     try:
 
         conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
 
-        cursor = conexao.cursor()
-
-
-        cursor.execute(
-            """
-            DELETE FROM CARRINHO
-
-            WHERE id_carrinho = %s
-            AND id_usuario = %s
-            """,
-
-            (
-                cart_id,
-                session["usuario_id"]
-            )
+        id_carrinho = obter_carrinho_aberto(
+            cursor,
+            session["usuario_id"]
         )
 
+        if id_carrinho is not None:
+
+            cursor.execute(
+                """
+                DELETE FROM ITEM_CARRINHO
+                WHERE id_carrinho = %s
+                AND id_produto = %s
+                """,
+                (id_carrinho, product_id)
+            )
+
+            atualizar_totais_carrinho(cursor, id_carrinho)
 
         conexao.commit()
-
 
     except Error as erro:
 
         if conexao:
-
             conexao.rollback()
 
-
-        return (
-            f"Erro ao remover produto: {erro}"
-        )
-
+        return f"Erro ao remover produto: {erro}"
 
     finally:
 
-        fechar_banco(
-            conexao,
-            cursor
-        )
+        fechar_banco(conexao, cursor)
 
-
-    return redirect(
-        url_for("carrinho")
-    )
+    return redirect(url_for("carrinho"))
 
 
 # =========================================================
@@ -1517,6 +1029,4 @@ def remove_from_cart(cart_id):
 
 if __name__ == "__main__":
 
-    app.run(
-        debug=True
-    )
+    app.run(debug=True)
