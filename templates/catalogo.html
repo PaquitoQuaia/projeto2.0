@@ -18,7 +18,9 @@
 
     <header>
       <div class="topo">
-        <div class="logo">TRUCK PARTS</div>
+        <a href="{{ url_for('land') }}" class="marca">
+        <img src="{{ url_for('static', filename='imagens/logo_topo.png') }}" alt="Truck Parts" class="logo_topo">
+        </a>
 
         <a href="{{ url_for('carrinho') }}" class="carrinho">
           <img
@@ -160,6 +162,7 @@
           <h2>{{ codigo }}</h2>
           <p class="descricao-produto">{{ tipo }}</p>
           <div class="marca">Marca: {{ p.marca_produto }}</div>
+         <div class="modelo">Modelo: {{ p.modelo_scania }}</div>
           <div class="preco">R$ {{ "%.2f"|format(p.preco_prod) }}</div>
           <div class="estoque">Estoque: {{ p.estoque }}</div>
         </div>
@@ -186,37 +189,7 @@
       </button>
     </div>
 
-    <script>
-      (function () {
-        const grid = document.getElementById("grid");
-        if (!grid) return;
-
-        const cards = Array.from(grid.querySelectorAll(".card"));
-        const initial = 8;
-        const step = 8;
-        let visible = initial;
-
-        const showMoreBtn = document.getElementById("showMore");
-
-        function update() {
-          cards.forEach((c, i) => {
-            c.classList.toggle("hidden", i >= visible);
-          });
-          if (showMoreBtn) {
-            showMoreBtn.style.display = visible >= cards.length ? "none" : "";
-          }
-        }
-
-        update();
-
-        if (showMoreBtn) {
-          showMoreBtn.addEventListener("click", function () {
-            visible += step;
-            update();
-          });
-        }
-      })();
-    </script>
+    <script src="{{ url_for('static', filename='JS/carrinho.js') }}"></script>
 
     {% else %}
 

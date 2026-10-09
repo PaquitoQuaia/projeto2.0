@@ -23,10 +23,11 @@
         border-bottom: 1px solid #ddd;
       }
 
-      .logo {
-        color: #e30613;
-        font-size: 27px;
-        font-weight: bold;
+.logo_topo {
+        display: block;
+        height: 42px;
+        width: auto;
+        max-width: 100%;
       }
 
       .carrinho {
@@ -418,6 +419,14 @@
         }
 
         .carrinho span {
-          display: none;
-        }
+          display: none; 
       }
+       /* =========================
+           MODELO
+        ========================= */
+        .modelo {
+          color: #777;
+          font-size: 13px;
+          margin-top: 5px;
+        }
+    }

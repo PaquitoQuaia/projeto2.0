@@ -10,7 +10,11 @@
     <title>Truck Parts</title>
 
     <!-- Caminho corrigido com a subpasta css/ -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/land.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/land.css') }}"
+    />
+    <script defer src="{{ url_for('static', filename='JS/land.js') }}"></script>
   </head>
 
   <body>
@@ -35,28 +39,82 @@
             class="carrinho-btn"
             title="Carrinho de compras"
           >
-            <img
-              src="{{ url_for('static', filename='imagens/carrinho.png') }}"
-              width="35"
-              height="35"
-              alt="Carrinho"
-            />
+            <img />
           </a>
-
           <!-- PERFIL COM DROPDOWN -->
           <details class="perfil-dropdown">
-            <summary aria-label="Abrir menu">
-              <img class="perfil-btn"
+            <summary aria-label="Abrir menu do perfil">
+              {% if session.get("usuario_id") %}
+              <img
+                class="perfil-btn"
+                src="{{ url_for('static', filename='imagens/Avatar_perfil_logado.png') }}"
+                width="60"
+                height="40"
+                alt="Perfil logado"
+              />
+              {% else %}
+              <img
+                class="perfil-btn"
                 src="{{ url_for('static', filename='imagens/Avatar_perfil.png') }}"
                 width="60"
                 height="40"
                 alt="Perfil"
               />
+              {% endif %}
             </summary>
 
-            <div class="dropdown">
-              <a href="{{ url_for('login') }}"> Entrar </a>
-              <a href="{{ url_for('cadastro') }}"> Criar conta </a>
+            <div class="dropdown perfil-menu-card">
+              {% if session.get("usuario_id") %}
+              <div class="perfil-menu-cabecalho">
+                <div class="perfil-identificacao">
+                  <span class="perfil-menu-titulo">
+                    Olá, {{ session.get("usuario_nome", "").split()[0] }}!
+                  </span>
+                </div>
+              </div>
+
+              <div class="perfil-menu-opcoes">
+                <a href="{{ url_for('editar_perfil') }}" class="perfil-opcao">
+                  <span class="perfil-icone">✎</span>
+                  <span>Editar perfil</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+                <a href="{{ url_for('carrinho') }}" class="perfil-opcao">
+                  <span class="perfil-icone">🛒</span>
+                  <span>Carrinho</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+              </div>
+
+              <div class="perfil-menu-rodape">
+                <a
+                  href="{{ url_for('logout') }}"
+                  class="perfil-opcao perfil-sair"
+                >
+                  <span class="perfil-icone">↪</span>
+                  <span>Sair da conta</span>
+                </a>
+              </div>
+              {% else %}
+              <div class="perfil-menu-cabecalho perfil-visitante">
+                <div class="perfil-identificacao">
+                  <span class="perfil-menu-titulo">Bem-vindo!</span>
+                  <span class="saudacao">Acesse sua conta Truck Parts</span>
+                </div>
+              </div>
+              <div class="perfil-menu-opcoes">
+                <a href="{{ url_for('login') }}" class="perfil-opcao">
+                  <span class="perfil-icone">↪</span>
+                  <span>Entrar</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+                <a href="{{ url_for('cadastro') }}" class="perfil-opcao">
+                  <span class="perfil-icone">＋</span>
+                  <span>Criar conta</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+              </div>
+              {% endif %}
             </div>
           </details>
 
@@ -69,7 +127,7 @@
             </summary>
 
             <div class="dropdown">
-              <a href="#contato"> Ajuda e Suporte </a>
+              <a href="https://wa.me/5511999999999"> Ajuda e Suporte </a>
             </div>
           </details>
         </div>
@@ -150,7 +208,7 @@
 
           <div class="slide">
             <img
-              src="{{ url_for('static', filename='imagens/carrosel_sobreposto2.jpeg') }}"
+              src="{{ url_for('static', filename='imagens/carrosel_sobreposto2.jpg') }}"
               alt="Caminhão Truck Parts"
             />
           </div>
@@ -257,122 +315,122 @@
 
         <!-- SLIDER -->
 
-        <div class="prod-slider">
-          <div class="prod-slides">
-            <!-- SLIDE 1 -->
+        <div class="prod-slider-wrap">
+          <button
+            type="button"
+            class="seta-produto seta-esquerda"
+            aria-label="Produto anterior"
+          >
+            ❮
+          </button>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Freios"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/freio.jpg') }}"
-                    alt="Peças de freio"
-                  />
-                </div>
+          <div class="prod-slider">
+            <div class="prod-slides">
+              <!-- SLIDE 1 -->
 
-                <h2>
-                  <span>›</span>
-                  Freios
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Freios"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/freio.jpg') }}"
+                      alt="Peças de freio"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Motor"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/motor.jpg') }}"
-                    alt="Peças de motor"
-                  />
-                </div>
+                  <h2>Freios</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Motor
-                </h2>
-              </a>
-            </div>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Motor"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/junta_cabecote.png') }}"
+                      alt="Peças de motor"
+                    />
+                  </div>
 
-            <!-- SLIDE 2 -->
+                  <h2>Motor</h2>
+                </a>
+              </div>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Suspensão"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/suspensão.webp') }}"
-                    alt="Peças de suspensão"
-                  />
-                </div>
+              <!-- SLIDE 2 -->
 
-                <h2>
-                  <span>›</span>
-                  Suspensão
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Suspensão"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/suspensão.webp') }}"
+                      alt="Peças de suspensão"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Filtros"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/filtro.jpg') }}"
-                    alt="Filtros para caminhão"
-                  />
-                </div>
+                  <h2>Suspensão</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Filtros
-                </h2>
-              </a>
-            </div>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Filtros"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/filtro.jpg') }}"
+                      alt="Filtros para caminhão"
+                    />
+                  </div>
 
-            <!-- SLIDE 3 -->
+                  <h2>Filtros</h2>
+                </a>
+              </div>
 
-            <div class="prod-slide">
-              <a
-                href="{{ url_for('catalogo', categoria='Bomba d\'água') }}"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/chassi.jpg') }}"
-                    alt="Bomba d'água"
-                  />
-                </div>
+              <!-- SLIDE 3 -->
 
-                <h2>
-                  <span>›</span>
-                  Bomba d'água
-                </h2>
-              </a>
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo', categoria='Bomba d\'água') }}"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/bomba_dagua.png') }}"
+                      alt="Bomba d'água"
+                    />
+                  </div>
 
-              <a
-                href="{{ url_for('catalogo') }}?categoria=Faróis"
-                class="categoria"
-              >
-                <div class="imagem-categoria">
-                  <img
-                    src="{{ url_for('static', filename='imagens/distribuidora.webp') }}"
-                    alt="Faróis"
-                  />
-                </div>
+                  <h2>Bomba d'água</h2>
+                </a>
 
-                <h2>
-                  <span>›</span>
-                  Faróis
-                </h2>
-              </a>
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Iluminação"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/farol.png') }}"
+                      alt="Faróis"
+                    />
+                  </div>
+
+                  <h2>Faróis</h2>
+                </a>
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            class="seta-produto seta-direita"
+            aria-label="Próximo produto"
+          >
+            ❯
+          </button>
         </div>
 
         <!-- BOLINHAS -->

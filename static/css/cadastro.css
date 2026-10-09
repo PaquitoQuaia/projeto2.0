@@ -1,193 +1,163 @@
- * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-
-        min-height: 100vh;
-
-        font-family: Arial, Helvetica, sans-serif;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        padding: 30px 15px;
-
-        background:
-        linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    url("../imagens/scania.jpg") center / cover no-repeat fixed;
+* {
+  box-sizing: border-box;
 }
 
-      .formulario {
-        width: 100%;
-
-        max-width: 480px;
-
-        background: rgba(255, 255, 255, 0.97);
-
-        border-radius: 16px;
-
-        overflow: hidden;
-
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      }
-
-      .topo {
-        background: #e30613;
-
-        color: white;
-
-        padding: 25px;
-
-        text-align: center;
-      }
-
-      .topo h1 {
-        margin: 0;
-
-        font-size: 28px;
-      }
-
-      .topo p {
-        margin: 8px 0 0;
-
-        opacity: 0.9;
-      }
-
-      form {
-        padding: 25px;
-      }
-
-      .grupo {
-        margin-bottom: 15px;
-      }
-
-      label {
-        display: block;
-
-        margin-bottom: 6px;
-
-        font-weight: bold;
-
-        font-size: 13px;
-
-        color: #333;
-      }
-
-      input {
-        width: 100%;
-
-        padding: 12px;
-
-        border: 1px solid #d5d5d5;
-
-        border-radius: 8px;
-
-        outline: none;
-
-        font-size: 14px;
-
-        transition: 0.2s;
-      }
-
-      input:focus {
-        border-color: #e30613;
-
-        box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
-      }
-
-      .linha {
-        display: grid;
-
-        grid-template-columns: 1fr 1fr;
-
-        gap: 12px;
-      }
-
-      .opcoes {
-        display: grid;
-
-        gap: 8px;
-
-        margin-top: 8px;
-      }
-
-      .opcao {
-        display: flex;
-
-        align-items: center;
-
-        gap: 8px;
-
-        font-weight: normal;
-
-        margin: 0;
-      }
-
-      .opcao input {
-        width: auto;
-      }
-
-      button {
-        width: 100%;
-
-        padding: 13px;
-
-        margin-top: 8px;
-
-        border: none;
-
-        border-radius: 8px;
-
-        background: #e30613;
-
-        color: white;
-
-        font-weight: bold;
-
-        font-size: 15px;
-
-        cursor: pointer;
-
-        transition: 0.2s;
-      }
-
-      button:hover {
-        background: #b9000c;
-
-        transform: translateY(-2px);
-      }
-
-      .login {
-        display: block;
-
-        text-align: center;
-
-        margin-top: 18px;
-
-        color: #e30613;
-
-        text-decoration: none;
-
-        font-size: 14px;
-
-        font-weight: bold;
-      }
-
-      .login:hover {
-        text-decoration: underline;
-      }
-
-      @media (max-width: 500px) {
-        .linha {
-          grid-template-columns: 1fr;
-        }
-
-        .formulario {
-          max-width: 100%;
-        }
-      }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 15px;
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.38), rgba(10, 10, 10, 0.38)),
+    url('../imagens/scania.jpg') center/cover no-repeat fixed;
+}
+
+.formulario {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.05);
+}
+
+.topo {
+  background: transparent;
+  color: #111;
+  padding: 26px 24px 8px;
+  text-align: center;
+}
+
+.topo h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.logo_topo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 36px;
+  margin: 0 auto;
+}
+
+.topo p {
+  margin: 8px 0 0;
+  color: #e30613;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+form {
+  padding: 18px 24px 26px;
+}
+
+.grupo {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #444;
+}
+
+input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  border-color: #e30613;
+  box-shadow: 0 0 0 4px rgba(227, 6, 19, 0.08);
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.opcoes {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.opcao input {
+  width: auto;
+  accent-color: #e30613;
+}
+
+button {
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 10px;
+  background: #e30613;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 18px rgba(227, 6, 19, 0.14);
+}
+
+button:hover {
+  background: #c9000b;
+  transform: translateY(-1px);
+}
+
+.login {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  color: #444;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.login:hover {
+  color: #e30613;
+  text-decoration: none;
+}
+
+@media (max-width: 500px) {
+  .linha {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario {
+    max-width: 100%;
+  }
+}

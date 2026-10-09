@@ -1,11 +1,12 @@
 <!doctype html>
+
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Carrinho | Truck Parts</title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/carrinho.css') }}"
@@ -13,7 +14,11 @@
   </head>
 
   <body>
-    <header class="topo">TRUCK PARTS</header>
+    <header class="topo">
+      <a href="{{ url_for('land') }}" class="marca">
+        <span>TRUCK</span>PARTS
+      </a>
+    </header>
 
     <main class="container">
       <div class="titulo">
@@ -25,16 +30,15 @@
       {% if items %} {% for item in items %}
 
       <article class="produto">
+        <!-- IMAGEM DO PRODUTO -->
         <div class="imagem">
           <img
-            src="{{ url_for(
-                        'static',
-                        filename=item.imagem
-                    ) }}"
+            src="{{ url_for('static', filename=item.imagem) }}"
             alt="{{ item.descricao_prod }}"
           />
         </div>
 
+        <!-- INFORMAÇÕES DO PRODUTO -->
         <div class="informacoes">
           <h2>{{ item.descricao_prod }}</h2>
 
@@ -43,38 +47,34 @@
           <p>{{ item.categoria }}</p>
         </div>
 
+        <!-- QUANTIDADE -->
         <div class="quantidade">
+          <!-- DIMINUIR -->
           <form
             method="post"
-            action="{{ url_for(
-                        'diminuir_quantidade',
-                        cart_id=item.id_carrinho
-                    ) }}"
+            action="{{ url_for('diminuir_quantidade', product_id=item.id_produto) }}"
           >
             <button type="submit">−</button>
           </form>
 
           <span class="numero"> {{ item.quantidade }} </span>
 
+          <!-- AUMENTAR -->
           <form
             method="post"
-            action="{{ url_for(
-                        'aumentar_quantidade',
-                        cart_id=item.id_carrinho
-                    ) }}"
+            action="{{ url_for('aumentar_quantidade', product_id=item.id_produto) }}"
           >
             <button type="submit">+</button>
           </form>
         </div>
 
+        <!-- PREÇO -->
         <div class="preco">R$ {{ "%.2f"|format(item.subtotal) }}</div>
 
+        <!-- REMOVER -->
         <form
           method="post"
-          action="{{ url_for(
-                    'remove_from_cart',
-                    cart_id=item.id_carrinho
-                ) }}"
+          action="{{ url_for('remove_from_cart', product_id=item.id_produto) }}"
         >
           <button class="remover" type="submit">Remover</button>
         </form>
@@ -82,6 +82,7 @@
 
       {% endfor %}
 
+      <!-- TOTAL -->
       <div class="total">
         <strong> Total do pedido </strong>
 
@@ -90,6 +91,7 @@
 
       {% else %}
 
+      <!-- CARRINHO VAZIO -->
       <div class="vazio">
         <h2>Seu carrinho está vazio</h2>
 
@@ -100,8 +102,26 @@
 
       {% endif %}
 
+      <!-- VOLTAR AO CATÁLOGO -->
       <a class="voltar" href="{{ url_for('catalogo') }}">
-        ← Continuar comprando</a>
-        </form>
+        ← Continuar comprando
+      </a>
+
+      <a class="finalizar" href="{{ url_for('finalizar_compra') }}">
+        Finalizar compra
+      </a>
+    </main>
+
+    <div class="modal-estoque {% if not erro %}hidden{% endif %}" id="modal-estoque" aria-live="assertive">
+      <div class="modal-estoque-conteudo">
+        <button type="button" class="modal-fechar" aria-label="Fechar aviso">×</button>
+        <div class="modal-icone">!</div>
+        <h3>Estoque insuficiente</h3>
+        <p>{{ erro or 'Não foi possível concluir essa ação.' }}</p>
+        <button type="button" class="modal-btn">Entendi</button>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='JS/carrinho.js') }}"></script>
   </body>
 </html>

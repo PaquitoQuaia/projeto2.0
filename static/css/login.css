@@ -9,48 +9,54 @@ body {
   justify-content: center;
   font-family: Arial, Helvetica, sans-serif;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    url("../imagens/scania124.jpg") center / cover no-repeat fixed;
+    linear-gradient(rgba(10, 10, 10, 0.38), rgba(10, 10, 10, 0.38)),
+    url('../imagens/scania.jpg') center/cover no-repeat fixed;
+  padding: 30px 15px;
 }
 
 .login-box {
-  width: 90%;
-
-  max-width: 380px;
-
-  background: rgba(255, 255, 255, 0.97);
-
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #ececec;
   border-radius: 16px;
-
   overflow: hidden;
-
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.05);
 }
 
 .topo {
-  background: #e30613;
-
-  color: white;
-
+  background: transparent;
+  color: #111;
   text-align: center;
-
-  padding: 28px;
+  padding: 26px 24px 8px;
 }
 
 .topo h1 {
   margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
 
-  font-size: 27px;
+.logo_topo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 36px;
+  margin: 0 auto;
 }
 
 .topo p {
   margin: 8px 0 0;
-
-  opacity: 0.9;
+  color: #e30613;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
 }
 
 form {
-  padding: 28px;
+  padding: 18px 24px 26px;
 }
 
 .grupo {
@@ -59,80 +65,58 @@ form {
 
 label {
   display: block;
-
   margin-bottom: 7px;
-
-  font-weight: bold;
-
-  font-size: 13px;
-
-  color: #333;
+  font-weight: 700;
+  font-size: 12px;
+  color: #444;
 }
 
 input {
   width: 100%;
-
-  padding: 13px;
-
-  border: 1px solid #d5d5d5;
-
-  border-radius: 8px;
-
+  padding: 11px 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
   outline: none;
-
   font-size: 14px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:focus {
   border-color: #e30613;
-
-  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+  box-shadow: 0 0 0 4px rgba(227, 6, 19, 0.08);
 }
 
 button {
   width: 100%;
-
-  padding: 13px;
-
+  padding: 12px 16px;
   border: none;
-
-  border-radius: 8px;
-
+  border-radius: 10px;
   background: #e30613;
-
   color: white;
-
-  font-size: 15px;
-
-  font-weight: bold;
-
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 18px rgba(227, 6, 19, 0.14);
 }
 
 button:hover {
-  background: #b9000c;
-
-  transform: translateY(-2px);
+  background: #c9000b;
+  transform: translateY(-1px);
 }
 
 .cadastro {
   display: block;
-
   text-align: center;
-
   margin-top: 18px;
-
-  color: #e30613;
-
+  color: #444;
   text-decoration: none;
-
-  font-weight: bold;
-
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 13px;
 }
 
 .cadastro:hover {
-  text-decoration: underline;
+  color: #e30613;
+  text-decoration: none;
 }

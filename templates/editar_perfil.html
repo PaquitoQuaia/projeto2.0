@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar perfil | Truck Parts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editar_perfil.css') }}">
+</head>
+<body>
+  <header class="barra-topo">
+    <a href="{{ url_for('land') }}" class="marca">
+      <img src="{{ url_for('static', filename='imagens/logo_topo.png') }}" alt="Truck Parts" class="logo_topo">
+    </a>
+    <a href="{{ url_for('land') }}" class="voltar">← Voltar à página inicial</a>
+  </header>
+
+  <main class="pagina">
+    <section class="cartao">
+      <div class="cabecalho">
+        <div class="avatar">{{ usuario.nome[:1]|upper }}</div>
+        <div><p class="sobretitulo">MINHA CONTA</p><h1>Editar perfil</h1><p class="subtitulo">Atualize seus dados pessoais e endereço.</p></div>
+      </div>
+
+      {% if request.args.get('atualizado') == '1' %}
+        <div class="alerta sucesso" role="status">Seus dados foram atualizados com sucesso.</div>
+      {% endif %}
+      {% if erro %}<div class="alerta erro" role="alert">{{ erro }}</div>{% endif %}
+
+      <form action="{{ url_for('editar_perfil') }}" method="post">
+        <h2>Dados pessoais</h2>
+        <div class="campo"><label for="nome">Nome completo</label><input id="nome" name="nome" type="text" value="{{ usuario.nome or '' }}" autocomplete="name" required></div>
+        <div class="grade">
+          <div class="campo"><label for="data_nascimento">Data de nascimento</label><input id="data_nascimento" name="data_nascimento" type="date" value="{{ usuario.data_nascimento or '' }}"></div>
+          <div class="campo"><label for="cpf">CPF</label><input id="cpf" type="text" value="{{ usuario.cpf or '' }}" disabled><small>O CPF não pode ser alterado por esta tela.</small></div>
+        </div>
+        <div class="grade">
+          <div class="campo"><label for="telefone">Telefone</label><input id="telefone" name="telefone" type="tel" value="{{ usuario.telefone or '' }}" maxlength="15" autocomplete="tel" required></div>
+          <div class="campo"><label for="email">E-mail</label><input id="email" name="email" type="email" value="{{ usuario.email or '' }}" autocomplete="email" required></div>
+        </div>
+
+        <h2>Endereço</h2>
+        <div class="grade grade-endereco">
+          <div class="campo"><label for="cep">CEP</label><input id="cep" name="cep" type="text" value="{{ usuario.cep or '' }}" maxlength="9" autocomplete="postal-code" required></div>
+          <div class="campo"><label for="numero">Número</label><input id="numero" name="numero" type="text" value="{{ usuario.numero or '' }}" required></div>
+        </div>
+        <div class="campo"><label for="complemento">Complemento</label><input id="complemento" name="complemento" type="text" value="{{ usuario.complemento or '' }}" placeholder="Apartamento, bloco, referência..."></div>
+
+        <h2>Preferências</h2>
+        <div class="campo"><label for="tipo_cadastro">Tipo de cadastro</label>
+          <select id="tipo_cadastro" name="tipo_cadastro" required>
+            {% for tipo in ['Pessoa Física', 'Pessoa Jurídica', 'Revendedor'] %}
+              <option value="{{ tipo }}" {% if usuario.tipo_cadastro == tipo %}selected{% endif %}>{{ tipo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% set interesses_atuais = (usuario.interesses or '').split(', ') %}
+        <fieldset class="interesses"><legend>Interesses</legend>
+          {% for interesse in ['Mecânica', 'Elétrica', 'Acessórios', 'Pneus'] %}
+            <label class="opcao"><input type="checkbox" name="interesses" value="{{ interesse }}" {% if interesse in interesses_atuais %}checked{% endif %}><span>{{ interesse }}</span></label>
+          {% endfor %}
+        </fieldset>
+
+        <div class="acoes"><a href="{{ url_for('land') }}" class="botao secundario">Cancelar</a><button type="submit" class="botao primario">Salvar alterações</button></div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
