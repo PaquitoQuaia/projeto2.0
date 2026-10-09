@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Truck Parts - Peças e componentes para caminhões"
+    />
+    <title>Truck Parts</title>
+
+    <!-- Caminho corrigido com a subpasta css/ -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/land.css') }}"
+    />
+    <script defer src="{{ url_for('static', filename='JS/land.js') }}"></script>
+  </head>
+
+  <body>
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header>
+      <div class="topo">
+        <a href="{{ url_for('land') }}">
+          <img
+            src="{{ url_for('static', filename='imagens/logo_topo.png') }}"
+            alt="Logo Truck Parts"
+            class="logo"
+          />
+        </a>
+
+        <div class="container-usuario">
+          <!-- CARRINHO -->
+          <a
+            href="{{ url_for('carrinho') }}"
+            class="carrinho-btn"
+            title="Carrinho de compras"
+          >
+            <img />
+          </a>
+          <!-- PERFIL COM DROPDOWN -->
+          <details class="perfil-dropdown">
+            <summary aria-label="Abrir menu do perfil">
+              {% if session.get("usuario_id") %}
+              <img
+                class="perfil-btn"
+                src="{{ url_for('static', filename='imagens/Avatar_perfil_logado.png') }}"
+                width="60"
+                height="40"
+                alt="Perfil logado"
+              />
+              {% else %}
+              <img
+                class="perfil-btn"
+                src="{{ url_for('static', filename='imagens/Avatar_perfil.png') }}"
+                width="60"
+                height="40"
+                alt="Perfil"
+              />
+              {% endif %}
+            </summary>
+
+            <div class="dropdown perfil-menu-card">
+              {% if session.get("usuario_id") %}
+              <div class="perfil-menu-cabecalho">
+                <div class="perfil-identificacao">
+                  <span class="perfil-menu-titulo">
+                    Olá, {{ session.get("usuario_nome", "").split()[0] }}!
+                  </span>
+                </div>
+              </div>
+
+              <div class="perfil-menu-opcoes">
+                <a href="{{ url_for('editar_perfil') }}" class="perfil-opcao">
+                  <span class="perfil-icone">✎</span>
+                  <span>Editar perfil</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+                <a href="{{ url_for('carrinho') }}" class="perfil-opcao">
+                  <span class="perfil-icone">🛒</span>
+                  <span>Carrinho</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+              </div>
+
+              <div class="perfil-menu-rodape">
+                <a
+                  href="{{ url_for('logout') }}"
+                  class="perfil-opcao perfil-sair"
+                >
+                  <span class="perfil-icone">↪</span>
+                  <span>Sair da conta</span>
+                </a>
+              </div>
+              {% else %}
+              <div class="perfil-menu-cabecalho perfil-visitante">
+                <div class="perfil-identificacao">
+                  <span class="perfil-menu-titulo">Bem-vindo!</span>
+                  <span class="saudacao">Acesse sua conta Truck Parts</span>
+                </div>
+              </div>
+              <div class="perfil-menu-opcoes">
+                <a href="{{ url_for('login') }}" class="perfil-opcao">
+                  <span class="perfil-icone">↪</span>
+                  <span>Entrar</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+                <a href="{{ url_for('cadastro') }}" class="perfil-opcao">
+                  <span class="perfil-icone">＋</span>
+                  <span>Criar conta</span>
+                  <span class="perfil-seta">›</span>
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </details>
+
+          <!-- MENU -->
+          <details class="menu-simples">
+            <summary aria-label="Abrir menu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </summary>
+
+            <div class="dropdown">
+              <a href="https://wa.me/5511999999999"> Ajuda e Suporte </a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="#sobre"> SOBRE NÓS </a>
+
+        <a href="#produtos"> PRODUTOS </a>
+
+        <a href="{{ url_for('catalogo') }}"> CATÁLOGO </a>
+
+        <a href="#contato"> CONTATO </a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- =========================
+             CARROSSEL PRINCIPAL
+        ========================= -->
+
+      <section class="carrossel">
+        <input type="radio" name="slide" id="slide1" checked />
+        <input type="radio" name="slide" id="slide2" />
+        <input type="radio" name="slide" id="slide3" />
+
+        <div class="conteudo-carrossel">
+          <div class="texto-carrossel">
+            <h1 class="texto1">
+              QUALIDADE E CONFIANÇA
+              <br />
+              PARA MANTER O SEU CAMINHÃO
+              <br />
+              NA ESTRADA
+            </h1>
+
+            <h1 class="texto2">
+              PEÇAS DE QUALIDADE
+              <br />
+              PARA QUEM NÃO PODE PARAR
+            </h1>
+
+            <h1 class="texto3">
+              TRUCK PARTS
+              <br />
+              FORÇA PARA SEGUIR EM FRENTE
+            </h1>
+          </div>
+
+          <div class="imagem-carrossel">
+            <img
+              class="produto-slide produto1"
+              src="{{ url_for('static', filename='imagens/carrosel_produtos1.png') }}"
+              alt="Produto Truck Parts"
+            />
+
+            <img
+              class="produto-slide produto2"
+              src="{{ url_for('static', filename='imagens/pcarrosel_rodutos2.png') }}"
+              alt="Produto Truck Parts"
+            />
+
+            <img
+              class="produto-slide produto3"
+              src="{{ url_for('static', filename='imagens/carrosel_produtos.png') }}"
+              alt="Produto Truck Parts"
+            />
+          </div>
+        </div>
+
+        <div class="slides">
+          <div class="slide">
+            <img
+              src="{{ url_for('static', filename='imagens/scania.webp') }}"
+              alt="Caminhão Truck Parts"
+            />
+          </div>
+
+          <div class="slide">
+            <img
+              src="{{ url_for('static', filename='imagens/carrosel_sobreposto2.jpg') }}"
+              alt="Caminhão Truck Parts"
+            />
+          </div>
+
+          <div class="slide">
+            <img
+              src="{{ url_for('static', filename='imagens/carrosel_sobreposto.jpeg') }}"
+              alt="Caminhão Truck Parts"
+            />
+          </div>
+        </div>
+
+        <div class="navegacao-principal">
+          <label for="slide1" aria-label="Slide 1"></label>
+          <label for="slide2" aria-label="Slide 2"></label>
+          <label for="slide3" aria-label="Slide 3"></label>
+        </div>
+      </section>
+
+      <!-- =========================
+             SOBRE NÓS
+        ========================= -->
+
+      <section class="faixa-listrada sobrenos" id="sobre">
+        <h1>SOBRE NÓS</h1>
+
+        <p>
+          A Truck Parts entrega peças de qualidade e confiança para quem mantém
+          o Brasil em movimento.
+        </p>
+
+        <p>
+          Soluções que garantem desempenho, segurança e força para o seu
+          caminhão seguir sempre em frente.
+        </p>
+      </section>
+
+      <!-- =========================
+             INFORMAÇÕES
+        ========================= -->
+
+      <section class="informacoes">
+        <div class="imagens-informacoes">
+          <img
+            src="{{ url_for('static', filename='imagens/images.jpg') }}"
+            alt="Peças para caminhões"
+          />
+
+          <img
+            src="{{ url_for('static', filename='imagens/chassi.jpg') }}"
+            alt="Chassi para caminhão"
+          />
+
+          <img
+            src="{{ url_for('static', filename='imagens/distribuidora.webp') }}"
+            alt="Distribuidora automotiva"
+          />
+        </div>
+
+        <div class="textos-informacoes">
+          <div class="texto-vermelho">
+            <p>
+              Nossa missão é atender às necessidades de nossos clientes com
+              qualidade, segurança e confiança.
+            </p>
+          </div>
+
+          <div class="texto-branco">
+            <p>
+              Trabalhamos com empresas em nível nacional e internacional,
+              fornecendo soluções para o setor de transporte.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================
+             PRODUTOS
+        ========================= -->
+
+      <section class="produtos-servicos" id="produtos">
+        <div class="titulo-produtos">
+          <h1>Produtos / Serviços</h1>
+
+          <div class="linha-titulo"></div>
+        </div>
+
+        <p class="descricao-produtos">
+          Na Truck Parts você encontra peças e componentes para caminhões, com
+          qualidade e confiança para manter seu veículo sempre em movimento.
+
+          <br /><br />
+
+          Confira abaixo algumas de nossas principais categorias.
+        </p>
+
+        <!-- CONTROLES DO SLIDER -->
+
+        <input type="radio" name="p_slide" id="p_slide1" checked hidden />
+
+        <input type="radio" name="p_slide" id="p_slide2" hidden />
+
+        <input type="radio" name="p_slide" id="p_slide3" hidden />
+
+        <!-- SLIDER -->
+
+        <div class="prod-slider-wrap">
+          <button
+            type="button"
+            class="seta-produto seta-esquerda"
+            aria-label="Produto anterior"
+          >
+            ❮
+          </button>
+
+          <div class="prod-slider">
+            <div class="prod-slides">
+              <!-- SLIDE 1 -->
+
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Freios"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/freio.jpg') }}"
+                      alt="Peças de freio"
+                    />
+                  </div>
+
+                  <h2>Freios</h2>
+                </a>
+
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Motor"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/junta_cabecote.png') }}"
+                      alt="Peças de motor"
+                    />
+                  </div>
+
+                  <h2>Motor</h2>
+                </a>
+              </div>
+
+              <!-- SLIDE 2 -->
+
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Suspensão"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/suspensão.webp') }}"
+                      alt="Peças de suspensão"
+                    />
+                  </div>
+
+                  <h2>Suspensão</h2>
+                </a>
+
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Filtros"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/filtro.jpg') }}"
+                      alt="Filtros para caminhão"
+                    />
+                  </div>
+
+                  <h2>Filtros</h2>
+                </a>
+              </div>
+
+              <!-- SLIDE 3 -->
+
+              <div class="prod-slide">
+                <a
+                  href="{{ url_for('catalogo', categoria='Bomba d\'água') }}"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/bomba_dagua.png') }}"
+                      alt="Bomba d'água"
+                    />
+                  </div>
+
+                  <h2>Bomba d'água</h2>
+                </a>
+
+                <a
+                  href="{{ url_for('catalogo') }}?categoria=Iluminação"
+                  class="categoria"
+                >
+                  <div class="imagem-categoria">
+                    <img
+                      src="{{ url_for('static', filename='imagens/farol.png') }}"
+                      alt="Faróis"
+                    />
+                  </div>
+
+                  <h2>Faróis</h2>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="seta-produto seta-direita"
+            aria-label="Próximo produto"
+          >
+            ❯
+          </button>
+        </div>
+
+        <!-- BOLINHAS -->
+        <div class="bolinhas-produtos">
+          <label for="p_slide1" aria-label="Categorias 1"></label>
+          <label for="p_slide2" aria-label="Categorias 2"></label>
+          <label for="p_slide3" aria-label="Categorias 3"></label>
+        </div>
+      </section>
+
+      <!-- =========================
+             CONTATO
+        ========================= -->
+
+      <section class="faixa-listrada contato" id="contato">
+        <h1>CONTATO</h1>
+
+        <p>Entre em contato com a Truck Parts.</p>
+
+        <div class="dados-contato">
+          <p>
+            <strong>Telefone:</strong>
+            (55) 94915-1878
+          </p>
+
+          <p>
+            <strong>E-mail:</strong>
+            truckparts@hotmail.com
+          </p>
+
+          <p>
+            <strong>Endereço:</strong>
+            São Paulo - SP
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

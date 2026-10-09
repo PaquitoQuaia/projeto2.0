@@ -1,0 +1,408 @@
+ * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+
+        font-family: Arial, Helvetica, sans-serif;
+
+        background: #f5f5f5;
+
+        color: #222;
+      }
+
+.topo {
+        height: 75px;
+
+        background: #e30613;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .marca {
+        color: #fff;
+        text-decoration: none;
+        font-size: 25px;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+      }
+
+      .marca span {
+        color: #fff;
+      }
+
+      .marca:not(:has(span)) {
+        color: #111;
+      }
+
+      .marca span + * {
+        color: #111;
+      }
+
+      .logo_topo {
+        display: none;
+      }
+
+      .container {
+        width: 92%;
+
+        max-width: 1000px;
+
+        margin: 35px auto 60px;
+      }
+
+      .titulo {
+        margin-bottom: 25px;
+      }
+
+      .titulo h1 {
+        margin: 0;
+
+        font-size: 30px;
+      }
+
+      .titulo p {
+        color: #777;
+      }
+
+      .produto {
+        background: white;
+
+        border: 1px solid #e5e5e5;
+
+        border-radius: 12px;
+
+        padding: 18px;
+
+        margin-bottom: 15px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 20px;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .imagem {
+        width: 120px;
+
+        height: 95px;
+
+        background: #f7f7f7;
+
+        border-radius: 10px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+      }
+
+      .imagem img {
+        max-width: 100%;
+
+        max-height: 90px;
+
+        object-fit: contain;
+      }
+
+      .informacoes {
+        flex: 1;
+      }
+
+      .informacoes h2 {
+        margin: 0;
+
+        font-size: 18px;
+      }
+
+      .informacoes p {
+        margin: 6px 0;
+
+        color: #777;
+
+        font-size: 13px;
+      }
+
+      .quantidade {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+      }
+
+      .quantidade form {
+        margin: 0;
+      }
+
+      .quantidade button {
+        width: 32px;
+
+        height: 32px;
+
+        border: none;
+
+        border-radius: 6px;
+
+        background: #eee;
+
+        cursor: pointer;
+
+        font-size: 18px;
+      }
+
+      .quantidade button:hover {
+        background: #ddd;
+      }
+
+      .numero {
+        min-width: 30px;
+
+        text-align: center;
+
+        font-weight: bold;
+      }
+
+      .preco {
+        min-width: 120px;
+
+        text-align: right;
+
+        color: #e30613;
+
+        font-size: 18px;
+
+        font-weight: bold;
+      }
+
+      .remover {
+        background: #fff0f0;
+
+        border: 1px solid #ffd0d0;
+
+        color: #e30613;
+
+        padding: 9px 12px;
+
+        border-radius: 7px;
+
+        cursor: pointer;
+
+        font-weight: bold;
+      }
+
+      .remover:hover {
+        background: #e30613;
+
+        color: white;
+      }
+
+      .total {
+        margin-top: 25px;
+
+        background: white;
+
+        border-radius: 12px;
+
+        padding: 22px;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .valor {
+        color: #e30613;
+
+        font-size: 26px;
+
+        font-weight: bold;
+      }
+
+      .vazio {
+        background: white;
+
+        padding: 60px 25px;
+
+        border-radius: 14px;
+
+        text-align: center;
+      }
+
+      .vazio a {
+        display: inline-block;
+
+        margin-top: 15px;
+
+        padding: 12px 20px;
+
+        background: #e30613;
+
+        color: white;
+
+        text-decoration: none;
+
+        border-radius: 8px;
+
+        font-weight: bold;
+      }
+
+      .voltar {
+        display: block;
+
+        margin-top: 25px;
+
+        text-align: center;
+
+        color: #e30613;
+
+        text-decoration: none;
+
+        font-weight: bold;
+      }
+
+      .finalizar {
+        display: block;
+
+        width: fit-content;
+
+        margin: 20px 0 0 auto;
+
+        padding: 14px 28px;
+
+        background: #e30613;
+
+        color: white;
+
+        text-decoration: none;
+
+        border-radius: 10px;
+
+        font-weight: bold;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      }
+      .finalizar:hover {
+        background: #b9000c;
+        transform: scale(1.02);
+      }
+
+      .modal-estoque {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 17, 17, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 1000;
+      }
+
+      .modal-estoque.hidden {
+        display: none;
+      }
+
+      .modal-estoque-conteudo {
+        position: relative;
+        width: min(100%, 360px);
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px 22px 20px;
+        text-align: center;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      .modal-fechar {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 50%;
+        background: #f2f2f2;
+        color: #555;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .modal-icone {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #fff0f0;
+        color: #e30613;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .modal-estoque-conteudo h3 {
+        margin: 0 0 8px;
+        color: #222;
+      }
+
+      .modal-estoque-conteudo p {
+        margin: 0 0 18px;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .modal-btn {
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: #e30613;
+        color: #fff;
+        padding: 12px 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      @media (max-width: 700px) {
+        .produto {
+          flex-wrap: wrap;
+        }
+
+        .informacoes {
+          min-width: calc(100% - 140px);
+        }
+
+        .preco {
+          text-align: left;
+        }
+      }
+
+      .add {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #e30613;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .add:hover {
+        background: #b9000c;
+        transform: scale(1.02);
+      }
