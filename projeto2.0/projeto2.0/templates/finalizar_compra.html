@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Finalizar Compra | Truck Parts</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/finalizar.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+
+    <main class="container">
+
+
+        <div class="titulo">
+
+            <h1>
+                Finalizar compra
+            </h1>
+
+            <p>
+                Revise seu pedido e escolha a forma de pagamento.
+            </p>
+
+        </div>
+
+
+
+        <!-- FORMULÁRIO -->
+
+        <form
+            method="POST"
+            action="{{ url_for('finalizar_compra') }}"
+            class="form-finalizacao"
+        >
+
+
+            <div class="painel">
+
+
+
+                <!-- RESUMO DO PEDIDO -->
+
+                <section class="resumo">
+
+
+                    <h2>
+                        Resumo do pedido
+                    </h2>
+
+
+
+                    {% if items %}
+
+
+                    <div class="lista-itens">
+
+
+                        {% for item in items %}
+
+
+                        <div class="item">
+
+
+                            <div class="item-info">
+
+
+                                <strong>
+                                    {{ item.descricao_prod }}
+                                </strong>
+
+
+                                <span>
+                                    Quantidade:
+                                    {{ item.quantidade }}
+                                </span>
+
+
+                                {% if item.marca_produto %}
+
+                                <span>
+                                    Marca:
+                                    {{ item.marca_produto }}
+                                </span>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <span class="item-preco">
+
+                                R$
+                                {{ "%.2f"|format(item.subtotal) }}
+
+                            </span>
+
+
+                        </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+
+                    <!-- TOTAL -->
+
+                    <div class="total">
+
+
+                        <span>
+                            Total
+                        </span>
+
+
+                        <span class="valor">
+
+                            R$
+                            {{ "%.2f"|format(total) }}
+
+                        </span>
+
+
+                    </div>
+
+
+                    {% else %}
+
+
+                    <!-- CARRINHO VAZIO -->
+
+                    <div class="carrinho-vazio">
+
+
+                        <p>
+                            Seu carrinho está vazio.
+                        </p>
+
+
+                        <a
+                            href="{{ url_for('catalogo') }}"
+                            class="voltar-catalogo"
+                        >
+
+                            Voltar ao catálogo
+
+                        </a>
+
+
+                    </div>
+
+
+                    {% endif %}
+
+
+                </section>
+
+
+
+
+                <!-- PAGAMENTO -->
+
+                {% if items %}
+
+
+                <section class="pagamento-box">
+
+
+                    <h2>
+                        Forma de pagamento
+                    </h2>
+
+
+
+                    <!-- MÉTODO DE PAGAMENTO -->
+
+                    <div class="campo">
+
+
+                        <label for="pagamento">
+
+                            Selecionar método
+
+                        </label>
+
+
+
+                        <select
+                            id="pagamento"
+                            name="pagamento"
+                            required
+                        >
+
+
+                            <option value="pix">
+
+                                PIX
+
+                            </option>
+
+
+                            <option value="boleto">
+
+                                Boleto bancário
+
+                            </option>
+
+
+                            <option value="cartao">
+
+                                Cartão de crédito
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+
+
+                    <!-- DADOS DO CARTÃO -->
+
+                    <div
+                        id="extras-cartao"
+                        class="extras"
+                        style="display: none;"
+                    >
+
+
+                        <!-- NOME DO CARTÃO -->
+
+                        <div class="campo">
+
+
+                            <label for="nome_cartao">
+
+                                Nome no cartão
+
+                            </label>
+
+
+
+                            <input
+                                type="text"
+                                id="nome_cartao"
+                                name="nome_cartao"
+                                placeholder="Nome impresso no cartão"
+                                autocomplete="cc-name"
+                            >
+
+
+                        </div>
+
+
+
+
+                        <!-- NÚMERO E VALIDADE -->
+
+                        <div class="duas-colunas">
+
+
+                            <div class="campo">
+
+
+                                <label for="numero_cartao">
+
+                                    Número do cartão
+
+                                </label>
+
+
+
+                                <input
+                                    type="text"
+                                    id="numero_cartao"
+                                    name="numero_cartao"
+                                    placeholder="0000 0000 0000 0000"
+                                    maxlength="19"
+                                    inputmode="numeric"
+                                    autocomplete="cc-number"
+                                >
+
+
+                            </div>
+
+
+
+                            <div class="campo">
+
+
+                                <label for="validade">
+
+                                    Validade
+
+                                </label>
+
+
+
+                                <input
+                                    type="text"
+                                    id="validade"
+                                    name="validade"
+                                    placeholder="MM/AA"
+                                    maxlength="5"
+                                    inputmode="numeric"
+                                    autocomplete="cc-exp"
+                                >
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+                        <!-- CVV E PARCELAS -->
+
+                        <div class="duas-colunas">
+
+
+                            <div class="campo">
+
+
+                                <label for="codigo">
+
+                                    Código de segurança
+
+                                </label>
+
+
+
+                                <input
+                                    type="password"
+                                    id="codigo"
+                                    name="codigo"
+                                    placeholder="CVV"
+                                    maxlength="4"
+                                    inputmode="numeric"
+                                    autocomplete="cc-csc"
+                                >
+
+
+                            </div>
+
+
+
+                            <div class="campo">
+
+
+                                <label for="parcelas">
+
+                                    Parcelamento
+
+                                </label>
+
+
+
+                                <select
+                                    id="parcelas"
+                                    name="parcelas"
+                                >
+
+
+                                    <option value="1">
+
+                                        À vista
+
+                                    </option>
+
+
+                                    <option value="2">
+
+                                        2x sem juros
+
+                                    </option>
+
+
+                                    <option value="3">
+
+                                        3x sem juros
+
+                                    </option>
+
+
+                                    <option value="4">
+
+                                        4x sem juros
+
+                                    </option>
+
+
+                                    <option value="5">
+
+                                        5x com juros
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                    <!-- BOTÃO -->
+
+                    <button
+                        class="botao"
+                        type="submit"
+                    >
+
+                        Confirmar pagamento
+
+                    </button>
+
+
+                </section>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </form>
+
+
+
+
+        <!-- VOLTAR -->
+
+        <a
+            class="voltar"
+            href="{{ url_for('carrinho') }}"
+        >
+
+            ← Voltar ao carrinho
+
+        </a>
+
+
+    </main>
+
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const pagamento =
+                    document.getElementById("pagamento");
+
+
+                const extrasCartao =
+                    document.getElementById("extras-cartao");
+
+
+                const nomeCartao =
+                    document.getElementById("nome_cartao");
+
+
+                const numeroCartao =
+                    document.getElementById("numero_cartao");
+
+
+                const validade =
+                    document.getElementById("validade");
+
+
+                const codigo =
+                    document.getElementById("codigo");
+
+
+
+                function atualizarPagamento() {
+
+
+                    if (pagamento.value === "cartao") {
+
+
+                        extrasCartao.style.display =
+                            "block";
+
+
+                        nomeCartao.required =
+                            true;
+
+
+                        numeroCartao.required =
+                            true;
+
+
+                        validade.required =
+                            true;
+
+
+                        codigo.required =
+                            true;
+
+
+                    }
+
+
+                    else {
+
+
+                        extrasCartao.style.display =
+                            "none";
+
+
+                        nomeCartao.required =
+                            false;
+
+
+                        numeroCartao.required =
+                            false;
+
+
+                        validade.required =
+                            false;
+
+
+                        codigo.required =
+                            false;
+
+
+                    }
+
+                }
+
+
+
+                pagamento.addEventListener(
+                    "change",
+                    atualizarPagamento
+                );
+
+
+
+                atualizarPagamento();
+
+
+            }
+        );
+
+
+
+        /* FORMATAÇÃO DO CARTÃO */
+
+        const numeroCartao =
+            document.getElementById("numero_cartao");
+
+
+        if (numeroCartao) {
+
+
+            numeroCartao.addEventListener(
+                "input",
+                function () {
+
+
+                    let valor =
+                        this.value.replace(
+                            /\D/g,
+                            ""
+                        );
+
+
+                    valor =
+                        valor.substring(
+                            0,
+                            16
+                        );
+
+
+                    let grupos =
+                        valor.match(
+                            /.{1,4}/g
+                        );
+
+
+                    this.value =
+                        grupos
+                            ? grupos.join(" ")
+                            : "";
+
+
+                }
+            );
+
+        }
+
+
+
+        /* FORMATAÇÃO DA VALIDADE */
+
+        const validade =
+            document.getElementById("validade");
+
+
+        if (validade) {
+
+
+            validade.addEventListener(
+                "input",
+                function () {
+
+
+                    let valor =
+                        this.value.replace(
+                            /\D/g,
+                            ""
+                        );
+
+
+                    valor =
+                        valor.substring(
+                            0,
+                            4
+                        );
+
+
+                    if (valor.length > 2) {
+
+
+                        valor =
+                            valor.substring(
+                                0,
+                                2
+                            )
+                            +
+                            "/"
+                            +
+                            valor.substring(
+                                2
+                            );
+
+
+                    }
+
+
+                    this.value =
+                        valor;
+
+
+                }
+            );
+
+        }
+
+
+
+        /* SOMENTE NÚMEROS NO CVV */
+
+        const codigo =
+            document.getElementById("codigo");
+
+
+        if (codigo) {
+
+
+            codigo.addEventListener(
+                "input",
+                function () {
+
+
+                    this.value =
+                        this.value
+                            .replace(
+                                /\D/g,
+                                ""
+                            )
+                            .substring(
+                                0,
+                                4
+                            );
+
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
+```
